@@ -1,10 +1,10 @@
-package utp.edu.pe.restaurante.controller;
+package utp.edu.pe.restaurante.controller.Public;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import utp.edu.pe.restaurante.controller.dto.CategoriaDTO;
+import utp.edu.pe.restaurante.dto.CategoriaDTO;
 import utp.edu.pe.restaurante.entity.Categoria;
 import utp.edu.pe.restaurante.service.CategoriaService;
 import utp.edu.pe.restaurante.service.PlatoService;

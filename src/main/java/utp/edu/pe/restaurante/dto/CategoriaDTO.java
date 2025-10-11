@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller.dto;
+package utp.edu.pe.restaurante.dto;
 
 import utp.edu.pe.restaurante.entity.Categoria;
 

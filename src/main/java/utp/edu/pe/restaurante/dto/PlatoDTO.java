@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller.dto;
+package utp.edu.pe.restaurante.dto;
 
 import java.math.BigDecimal;
 

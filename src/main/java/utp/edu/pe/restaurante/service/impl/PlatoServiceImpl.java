@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.service;
+package utp.edu.pe.restaurante.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +13,7 @@ import utp.edu.pe.restaurante.exception.BusinessException;
 import utp.edu.pe.restaurante.exception.ResourceNotFoundException;
 import utp.edu.pe.restaurante.repository.CategoriaRepository;
 import utp.edu.pe.restaurante.repository.PlatoRepository;
+import utp.edu.pe.restaurante.service.PlatoService;
 
 
 @Service

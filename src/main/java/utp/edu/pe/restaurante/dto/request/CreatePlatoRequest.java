@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller.dto;
+package utp.edu.pe.restaurante.dto.request;
 import java.math.BigDecimal;
 
 public class CreatePlatoRequest {

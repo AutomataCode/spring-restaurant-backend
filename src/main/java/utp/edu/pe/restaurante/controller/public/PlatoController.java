@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller;
+package utp.edu.pe.restaurante.controller.Public;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

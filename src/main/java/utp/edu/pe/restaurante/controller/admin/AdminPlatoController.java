@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller;
+package utp.edu.pe.restaurante.controller.admin;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import utp.edu.pe.restaurante.controller.dto.CreatePlatoRequest;
-import utp.edu.pe.restaurante.controller.dto.PlatoDTO;
-import utp.edu.pe.restaurante.controller.dto.UpdatePlatoRequest;
+import utp.edu.pe.restaurante.dto.PlatoDTO;
+import utp.edu.pe.restaurante.dto.request.CreatePlatoRequest;
+import utp.edu.pe.restaurante.dto.request.UpdatePlatoRequest;
 import utp.edu.pe.restaurante.entity.Categoria;
 import utp.edu.pe.restaurante.entity.Plato;
 import utp.edu.pe.restaurante.exception.ValidationException;
