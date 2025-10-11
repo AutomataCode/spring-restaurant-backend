@@ -31,7 +31,7 @@ public class Categoria {
 	 @JsonIgnore
 	private List<Plato> platos = new ArrayList<>();
 
-	// Enums
+	
 	public enum TipoCategoria {
 		COMIDA, BEBIDA
 	}

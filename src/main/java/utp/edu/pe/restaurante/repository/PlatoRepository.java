@@ -16,23 +16,23 @@ import java.util.Optional;
 @Repository
 public interface PlatoRepository extends JpaRepository<Plato, Long> {
 	
-	 // Encontrar platos activos
+	 
     List<Plato> findByActivoTrue();
     
-    // Encontrar platos por categoría
+    
     List<Plato> findByCategoriaIdAndActivoTrue(Long categoriaId);
     
-    // Encontrar platos disponibles para domicilio
+    
     List<Plato> findByDisponibleDomicilioTrueAndActivoTrue();
     
-    // Buscar platos por nombre (insensitive case)
+
     @Query("SELECT p FROM Plato p WHERE LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%')) AND p.activo = true")
     List<Plato> buscarPorNombre(@Param("nombre") String nombre);
     
-    // Verificar si existe un plato con el mismo nombre
+   
     Optional<Plato> findByNombreIgnoreCase(String nombre);
     
-    // Contar platos activos por categoría
+  
     @Query("SELECT COUNT(p) FROM Plato p WHERE p.categoria.id = :categoriaId AND p.activo = true")
     Long countPlatosActivosByCategoriaId(@Param("categoriaId") Long categoriaId);
 	

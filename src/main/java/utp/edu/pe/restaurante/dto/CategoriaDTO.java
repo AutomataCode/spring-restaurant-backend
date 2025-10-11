@@ -39,3 +39,4 @@ public class CategoriaDTO {
 	    public void setActiva(Boolean activa) { this.activa = activa; }
 
 }
+

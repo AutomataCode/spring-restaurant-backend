@@ -14,9 +14,9 @@ public interface CategoriaService {
 	  
 	    
 	    
-	    // Eliminación lógica: desactiva categoría y sus platos
+	    
 	    void desactivarCategoriaYPlatos(Long id);
-	    // Reactivar categoría y platos
+	   
 	    Categoria reactivarCategoria(Long id);
 	    
 	  
