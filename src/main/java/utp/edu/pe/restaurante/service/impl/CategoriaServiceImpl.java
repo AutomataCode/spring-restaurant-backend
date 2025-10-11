@@ -91,8 +91,7 @@ public class CategoriaServiceImpl implements CategoriaService {
         categoria.setActiva(true);
         return categoriaRepository.save(categoria);
         
-        // NOTA: Los platos se reactivan individualmente después
-        // para permitir revisión del chef/cocinero
+       
     }
     
     
@@ -142,3 +141,4 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
 }
+

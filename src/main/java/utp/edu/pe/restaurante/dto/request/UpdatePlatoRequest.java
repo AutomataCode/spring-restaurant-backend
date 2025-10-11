@@ -13,7 +13,6 @@ public class UpdatePlatoRequest {
 	    private Boolean disponibleDomicilio;
 	    private Boolean activo;
 
-	    // Getters y Setters
 	    public String getNombre() { return nombre; }
 	    public void setNombre(String nombre) { this.nombre = nombre; }
 

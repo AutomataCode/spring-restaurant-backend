@@ -1,55 +1,61 @@
 package utp.edu.pe.restaurante.controller.Public;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import utp.edu.pe.restaurante.dto.PlatoDTO;
 import utp.edu.pe.restaurante.entity.Plato;
+import utp.edu.pe.restaurante.mapper.PlatoMapper;
 import utp.edu.pe.restaurante.service.PlatoService;
 
 import java.util.List;
-
-
 
 @RestController
 @RequestMapping("/api/platos")
 @CrossOrigin(origins = "*") // Para Angular
 public class PlatoController {
-	
 
     @Autowired
     private PlatoService platoService;
 
+    @Autowired
+    private PlatoMapper platoMapper;
+
     @GetMapping
-    public ResponseEntity<List<Plato>> getAllPlatosActivos() {
+    public ResponseEntity<List<PlatoDTO>> getAllPlatosActivos() {
         List<Plato> platos = platoService.findAllActive();
-        return ResponseEntity.ok(platos);
+        List<PlatoDTO> platosDTO = platoMapper.toDTOList(platos);
+        return ResponseEntity.ok(platosDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Plato> getPlatoById(@PathVariable Long id) {
+    public ResponseEntity<PlatoDTO> getPlatoById(@PathVariable Long id) {
         Plato plato = platoService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Plato no encontrado"));
-        return ResponseEntity.ok(plato);
+        return ResponseEntity.ok(platoMapper.toDTO(plato));
     }
 
     @GetMapping("/categoria/{categoriaId}")
-    public ResponseEntity<List<Plato>> getPlatosByCategoria(@PathVariable Long categoriaId) {
+    public ResponseEntity<List<PlatoDTO>> getPlatosByCategoria(@PathVariable Long categoriaId) {
         List<Plato> platos = platoService.findByCategoriaId(categoriaId);
-        return ResponseEntity.ok(platos);
+        List<PlatoDTO> platosDTO = platoMapper.toDTOList(platos);
+        return ResponseEntity.ok(platosDTO);
     }
 
     @GetMapping("/domicilio")
-    public ResponseEntity<List<Plato>> getPlatosDomicilio() {
+    public ResponseEntity<List<PlatoDTO>> getPlatosDomicilio() {
         List<Plato> platos = platoService.findAvailableForDomicilio();
-        return ResponseEntity.ok(platos);
+        List<PlatoDTO> platosDTO = platoMapper.toDTOList(platos);
+        return ResponseEntity.ok(platosDTO);
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Plato>> searchPlatos(@RequestParam String nombre) {
+    public ResponseEntity<List<PlatoDTO>> searchPlatos(@RequestParam String nombre) {
         List<Plato> platos = platoService.searchByNombre(nombre);
-        return ResponseEntity.ok(platos);
+        List<PlatoDTO> platosDTO = platoMapper.toDTOList(platos);
+        return ResponseEntity.ok(platosDTO);
     }
 
 }
+
