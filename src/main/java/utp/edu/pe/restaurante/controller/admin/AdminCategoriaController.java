@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller.Admin;
+package utp.edu.pe.restaurante.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,14 +61,12 @@ public class AdminCategoriaController {
 		return ResponseEntity.ok(categoriaMapper.toDTO(updatedCategoria));
 	}
 
-
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> desactivarCategoria(@PathVariable Long id) {
 		categoriaService.desactivarCategoriaYPlatos(id);
 		return ResponseEntity.noContent().build();
 	}
 
-	
 	@PatchMapping("/{id}/reactivar")
 	public ResponseEntity<CategoriaDTO> reactivarCategoria(@PathVariable Long id) {
 		Categoria categoria = categoriaService.reactivarCategoria(id);

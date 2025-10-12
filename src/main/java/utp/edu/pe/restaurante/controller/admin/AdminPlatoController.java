@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller.Admin;
+package utp.edu.pe.restaurante.controller.admin;
 
 import java.util.List;
 
@@ -60,12 +60,11 @@ public class AdminPlatoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PlatoDTO> updatePlato(@PathVariable Long id, @RequestBody UpdatePlatoRequest request) {
-       
+
         if (request.getCategoriaId() == null) {
             throw new ValidationException("El ID de la categoría es obligatorio");
         }
 
-       
         Plato platoDetails = platoMapper.toEntity(request);
 
         // Asignar la categoría con el ID
