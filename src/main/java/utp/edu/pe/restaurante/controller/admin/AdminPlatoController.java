@@ -43,12 +43,10 @@ public class AdminPlatoController {
 
     @PostMapping
     public ResponseEntity<PlatoDTO> createPlato(@RequestBody CreatePlatoRequest request) {
-        // Validar que se envíe categoriaId
         if (request.getCategoriaId() == null) {
             throw new ValidationException("El ID de la categoría es obligatorio");
         }
 
-        // Usar el mapper para convertir el request a entidad
         Plato plato = platoMapper.toEntity(request);
         Categoria categoria = new Categoria();
         categoria.setId(request.getCategoriaId());
@@ -67,7 +65,6 @@ public class AdminPlatoController {
 
         Plato platoDetails = platoMapper.toEntity(request);
 
-        // Asignar la categoría con el ID
         Categoria categoria = new Categoria();
         categoria.setId(request.getCategoriaId());
         platoDetails.setCategoria(categoria);

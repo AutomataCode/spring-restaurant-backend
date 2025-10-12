@@ -15,151 +15,139 @@ import utp.edu.pe.restaurante.repository.CategoriaRepository;
 import utp.edu.pe.restaurante.repository.PlatoRepository;
 import utp.edu.pe.restaurante.service.PlatoService;
 
-
 @Service
 @Transactional
 public class PlatoServiceImpl implements PlatoService {
-	
-	 	@Autowired
-	    private PlatoRepository platoRepository;
 
-	    @Autowired
-	    private CategoriaRepository categoriaRepository;
+	@Autowired
+	private PlatoRepository platoRepository;
 
-	    private static final String PLATO_NOT_FOUND = "Plato no encontrado con id: ";
+	@Autowired
+	private CategoriaRepository categoriaRepository;
 
-	    @Override
-	    @Transactional(readOnly = true)
-	    public List<Plato> findAll() {
-	        return platoRepository.findAll();
-	    }
+	private static final String PLATO_NOT_FOUND = "Plato no encontrado con id: ";
 
-	    @Override
-	    @Transactional(readOnly = true)
-	    public Optional<Plato> findById(Long id) {
-	        return platoRepository.findById(id);
-	    }
+	@Override
+	@Transactional(readOnly = true)
+	public List<Plato> findAll() {
+		return platoRepository.findAll();
+	}
 
-	    @Override
-	    public Plato save(Plato plato) {
-	        validatePlato(plato);
-	        if (plato.getCategoria() == null || plato.getCategoria().getId() == null) {
-	            throw new BusinessException("La categoría es obligatoria");
-	        }
-	        // Verificar que la categoría existe
-	        Categoria categoria = categoriaRepository.findById(plato.getCategoria().getId())
-	                .orElseThrow(() -> new BusinessException("La categoría especificada no existe"));
-	        
-	        if (!categoria.getActiva()) {
-	            throw new BusinessException("No se puede asignar una categoría inactiva");
-	        }
-	        
-	        plato.setCategoria(categoria);
-	        
-	        return platoRepository.save(plato);
-	    }
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<Plato> findById(Long id) {
+		return platoRepository.findById(id);
+	}
 
-	    @Override
-	    public Plato update(Long id, Plato platoDetails) {
-	        Plato plato = platoRepository.findById(id)
-	                .orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
+	@Override
+	public Plato save(Plato plato) {
+		validatePlato(plato);
+		if (plato.getCategoria() == null || plato.getCategoria().getId() == null) {
+			throw new BusinessException("La categoría es obligatoria");
+		}
+		Categoria categoria = categoriaRepository.findById(plato.getCategoria().getId())
+				.orElseThrow(() -> new BusinessException("La categoría especificada no existe"));
 
-	        validatePlato(platoDetails);
+		if (!categoria.getActiva()) {
+			throw new BusinessException("No se puede asignar una categoría inactiva");
+		}
 
-	        // Verificar categoría si se está actualizando
-	        if (platoDetails.getCategoria() != null && 
-	            platoDetails.getCategoria().getId() != null) {
-	            Categoria categoria = categoriaRepository.findById(platoDetails.getCategoria().getId())
-	                    .orElseThrow(() -> new BusinessException("La categoría especificada no existe"));
-	            plato.setCategoria(categoria);
-	        }
+		plato.setCategoria(categoria);
 
-	        // Actualizar campos
-	        plato.setNombre(platoDetails.getNombre());
-	        plato.setDescripcion(platoDetails.getDescripcion());
-	        plato.setPrecio(platoDetails.getPrecio());
-	        plato.setImagenUrl(platoDetails.getImagenUrl());
-	        plato.setTiempoPreparacion(platoDetails.getTiempoPreparacion());
-	        plato.setDisponibleDomicilio(platoDetails.getDisponibleDomicilio());
+		return platoRepository.save(plato);
+	}
 
-	        return platoRepository.save(plato);
-	    }
-	    @Override
-	    @Transactional
-	    public void desactivarPlato(Long id) {
-	        Plato plato = platoRepository.findById(id)
-	                .orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
-	        
-	        plato.setActivo(false);
-	        platoRepository.save(plato);
-	    }
-	  
-	    
-	    
+	@Override
+	public Plato update(Long id, Plato platoDetails) {
+		Plato plato = platoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
 
-	    
-	    
-	    
+		validatePlato(platoDetails);
 
-	    @Override
-	    @Transactional(readOnly = true)
-	    public List<Plato> findAllActive() {
-	        return platoRepository.findByActivoTrue();
-	    }
+		if (platoDetails.getCategoria() != null &&
+				platoDetails.getCategoria().getId() != null) {
+			Categoria categoria = categoriaRepository.findById(platoDetails.getCategoria().getId())
+					.orElseThrow(() -> new BusinessException("La categoría especificada no existe"));
+			plato.setCategoria(categoria);
+		}
 
-	    @Override
-	    @Transactional(readOnly = true)
-	    public List<Plato> findByCategoriaId(Long categoriaId) {
-	        return platoRepository.findByCategoriaIdAndActivoTrue(categoriaId);
-	    }
+		plato.setNombre(platoDetails.getNombre());
+		plato.setDescripcion(platoDetails.getDescripcion());
+		plato.setPrecio(platoDetails.getPrecio());
+		plato.setImagenUrl(platoDetails.getImagenUrl());
+		plato.setTiempoPreparacion(platoDetails.getTiempoPreparacion());
+		plato.setDisponibleDomicilio(platoDetails.getDisponibleDomicilio());
 
-	    @Override
-	    @Transactional(readOnly = true)
-	    public List<Plato> findAvailableForDomicilio() {
-	        return platoRepository.findByDisponibleDomicilioTrueAndActivoTrue();
-	    }
+		return platoRepository.save(plato);
+	}
 
-	    @Override
-	    @Transactional(readOnly = true)
-	    public List<Plato> searchByNombre(String nombre) {
-	        if (nombre == null || nombre.trim().isEmpty()) {
-	            return findAllActive();
-	        }
-	        return platoRepository.buscarPorNombre(nombre.trim());
-	    }
+	@Override
+	@Transactional
+	public void desactivarPlato(Long id) {
+		Plato plato = platoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
 
-	    @Override
-	    public Plato changeStatus(Long id, boolean activo) {
-	        Plato plato = platoRepository.findById(id)
-	                .orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
-	        
-	        plato.setActivo(activo);
-	        return platoRepository.save(plato);
-	    }
+		plato.setActivo(false);
+		platoRepository.save(plato);
+	}
 
-	    @Override
-	    @Transactional(readOnly = true)
-	    public boolean existsByNombre(String nombre) {
-	        return platoRepository.findByNombreIgnoreCase(nombre).isPresent();
-	    }
+	@Override
+	@Transactional(readOnly = true)
+	public List<Plato> findAllActive() {
+		return platoRepository.findByActivoTrue();
+	}
 
-	    @Override
-	    public void validatePlato(Plato plato) {
-	        if (plato.getNombre() == null || plato.getNombre().trim().isEmpty()) {
-	            throw new BusinessException("El nombre del plato es obligatorio");
-	        }
-	        
-	        if (plato.getPrecio() == null || plato.getPrecio().compareTo(java.math.BigDecimal.ZERO) < 0) {
-	            throw new BusinessException("El precio debe ser mayor o igual a cero");
-	        }
-	 
-	        
-	        // Validar nombre único (excepto para el mismo plato en actualización)
-	        Optional<Plato> platoExistente = platoRepository.findByNombreIgnoreCase(plato.getNombre());
-	        if (platoExistente.isPresent() && 
-	            (plato.getId() == null || !platoExistente.get().getId().equals(plato.getId()))) {
-	            throw new BusinessException("Ya existe un plato con el nombre: " + plato.getNombre());
-	        }
-	    }
+	@Override
+	@Transactional(readOnly = true)
+	public List<Plato> findByCategoriaId(Long categoriaId) {
+		return platoRepository.findByCategoriaIdAndActivoTrue(categoriaId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Plato> findAvailableForDomicilio() {
+		return platoRepository.findByDisponibleDomicilioTrueAndActivoTrue();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Plato> searchByNombre(String nombre) {
+		if (nombre == null || nombre.trim().isEmpty()) {
+			return findAllActive();
+		}
+		return platoRepository.buscarPorNombre(nombre.trim());
+	}
+
+	@Override
+	public Plato changeStatus(Long id, boolean activo) {
+		Plato plato = platoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
+
+		plato.setActivo(activo);
+		return platoRepository.save(plato);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public boolean existsByNombre(String nombre) {
+		return platoRepository.findByNombreIgnoreCase(nombre).isPresent();
+	}
+
+	@Override
+	public void validatePlato(Plato plato) {
+		if (plato.getNombre() == null || plato.getNombre().trim().isEmpty()) {
+			throw new BusinessException("El nombre del plato es obligatorio");
+		}
+
+		if (plato.getPrecio() == null || plato.getPrecio().compareTo(java.math.BigDecimal.ZERO) < 0) {
+			throw new BusinessException("El precio debe ser mayor o igual a cero");
+		}
+
+		Optional<Plato> platoExistente = platoRepository.findByNombreIgnoreCase(plato.getNombre());
+		if (platoExistente.isPresent() &&
+				(plato.getId() == null || !platoExistente.get().getId().equals(plato.getId()))) {
+			throw new BusinessException("Ya existe un plato con el nombre: " + plato.getNombre());
+		}
+	}
 
 }

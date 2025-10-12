@@ -30,4 +30,5 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
+# Mantenemos .vscode/ para compartir configuración recomendada del proyecto
+# .vscode/

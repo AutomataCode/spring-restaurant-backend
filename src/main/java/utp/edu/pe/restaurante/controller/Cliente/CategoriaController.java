@@ -1,4 +1,4 @@
-package utp.edu.pe.restaurante.controller.Public;
+package utp.edu.pe.restaurante.controller.Cliente;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
