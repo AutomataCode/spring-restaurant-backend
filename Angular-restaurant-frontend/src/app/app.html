@@ -1,0 +1,21 @@
+<div class="container">
+    <header>
+        <h1>{{ title() }}</h1>
+        <nav>
+            <a routerLink="/">Inicio</a>
+            <a routerLink="/menu">Menú</a>
+            <a routerLink="/pedidos">Pedidos</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="welcome">
+            <h2>Bienvenido al Sistema de Restaurante</h2>
+            <p>API Backend funcionando correctamente en <a href="http://localhost:8080"
+                    target="_blank">http://localhost:8080</a></p>
+            <p>Frontend Angular funcionando en <strong>http://localhost:4200</strong></p>
+        </div>
+
+        <router-outlet></router-outlet>
+    </main>
+</div>

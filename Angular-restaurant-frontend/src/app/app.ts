@@ -4,8 +4,8 @@ import { Component, signal } from '@angular/core';
   selector: 'app-root',
   templateUrl: './app.html',
   standalone: false,
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
-  protected readonly title = signal('angular-restaurant-frontend');
+  title = signal('angular-restaurant-frontend');
 }
