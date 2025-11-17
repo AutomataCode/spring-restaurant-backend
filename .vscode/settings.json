@@ -1,6 +1,20 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
+    "java.project.sourcePaths": [
+        "BACKEND/src/main/java"
+    ],
+    "java.project.outputPath": "BACKEND/target/classes",
+    "java.project.referencedLibraries": [
+        "BACKEND/target/**/*.jar"
+    ],
     "java.compile.nullAnalysis.mode": "automatic",
-    "spring-boot.ls.java.home": "${env:JAVA_HOME}",
-    "java.jdt.ls.java.home": "${env:JAVA_HOME}"
+    "maven.executable.path": "",
+    "java.configuration.maven.userSettings": null,
+    "java.import.maven.enabled": true,
+    "java.configuration.runtimes": [],
+    "files.exclude": {
+        "**/target": true,
+        "**/.classpath": false,
+        "**/.project": false
+    }
 }
