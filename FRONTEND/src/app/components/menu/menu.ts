@@ -205,30 +205,34 @@ export class Menu implements OnInit, OnDestroy, AfterViewInit {
 
   getImageUrl(plato: Plato): string {
     // PRIORIDAD 1: Si el plato ya tiene una URL de imagen (del backend), usarla
-    // Esto es lo más importante cuando se crea un plato desde el panel admin
     if (plato.imagenUrl && plato.imagenUrl.trim() !== '') {
       // Si es una URL completa (http/https), devolverla directamente
       if (plato.imagenUrl.startsWith('http://') || plato.imagenUrl.startsWith('https://')) {
         return plato.imagenUrl;
       }
-      // Si es una ruta relativa del backend, construir la URL completa
-      if (plato.imagenUrl.startsWith('/')) {
-        return `http://localhost:8080${plato.imagenUrl}`;
+      
+      // Si es una ruta relativa del backend (ej: uploads/platos/...), construir la URL completa
+      // Esto corrige el problema de imágenes rotas en otros navegadores
+      if (plato.imagenUrl.startsWith('uploads/') || plato.imagenUrl.startsWith('/uploads/')) {
+        // Asegurar que no haya doble slash al principio
+        const cleanPath = plato.imagenUrl.startsWith('/') ? plato.imagenUrl.substring(1) : plato.imagenUrl;
+        return `http://localhost:8080/${cleanPath}`;
       }
-      // Si es una ruta local del frontend, devolverla
-      return plato.imagenUrl;
+
+      // Si es una ruta relativa del frontend (ej: /assets/...), devolverla
+      if (plato.imagenUrl.startsWith('/assets/')) {
+        return plato.imagenUrl;
+      }
     }
     
     // PRIORIDAD 2: Buscar imagen local basada en el nombre del plato
-    // Esto funciona para platos que ya tienen imágenes guardadas localmente
+    // Esto funciona para platos que ya tienen imágenes guardadas localmente en assets
     const imagenLocal = this.getLocalImagePath(plato.nombre);
     if (imagenLocal) {
       return imagenLocal;
     }
     
     // PRIORIDAD 3: Imagen por defecto/placeholder
-    // Esta se usa cuando no hay imagenUrl del backend ni imagen local
-    // Útil para platos nuevos creados desde el panel admin
     return '/assets/images/platos/default.svg';
   }
 

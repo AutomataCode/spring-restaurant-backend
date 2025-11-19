@@ -2,6 +2,7 @@ package utp.edu.pe.restaurante.service.impl;
 
 import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utp.edu.pe.restaurante.dto.PedidoDTO;
@@ -44,6 +45,9 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Autowired
     private DetallePedidoMapper detallePedidoMapper;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     @Transactional(readOnly = true)
@@ -139,7 +143,17 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoCompleto.setTotal(totalCalculado);
         pedidoCompleto = pedidoRepository.save(pedidoCompleto);
 
-        return pedidoMapper.toDTO(pedidoCompleto);
+        PedidoDTO pedidoDTO = pedidoMapper.toDTO(pedidoCompleto);
+
+        // Notificar al admin sobre el nuevo pedido
+        try {
+            messagingTemplate.convertAndSend("/topic/admin/pedidos", pedidoDTO);
+            System.out.println("DEBUG: Notificación WebSocket enviada a /topic/admin/pedidos");
+        } catch (Exception e) {
+            System.err.println("ERROR: No se pudo enviar notificación WebSocket: " + e.getMessage());
+        }
+
+        return pedidoDTO;
     }
 
     @Override

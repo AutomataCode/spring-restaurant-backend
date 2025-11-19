@@ -1,20 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
+import { WebSocketService } from '../../services/websocket.service';
 import { Plato, Categoria } from '../../models/plato.model';
 import { Pedido } from '../../models/pedido.model';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Message } from '@stomp/stompjs';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.html',
   styleUrl: './admin.css',
 })
-export class Admin implements OnInit {
+export class Admin implements OnInit, OnDestroy {
   // Estados de la vista
   activeTab: 'dashboard' | 'platos' | 'categorias' | 'pedidos' = 'dashboard';
+  
+  // Suscripciones
+  private pedidosSubscription: Subscription | null = null;
   
   // Datos
   platos: Plato[] = [];
@@ -74,11 +79,50 @@ export class Admin implements OnInit {
   constructor(
     private adminService: AdminService,
     private authService: AuthService,
+    private webSocketService: WebSocketService,
     private router: Router
   ) {}
   
   ngOnInit(): void {
     this.loadDashboard();
+    this.initWebSocket();
+  }
+
+  ngOnDestroy(): void {
+    if (this.pedidosSubscription) {
+      this.pedidosSubscription.unsubscribe();
+    }
+  }
+
+  initWebSocket(): void {
+    // Iniciar conexión WebSocket
+    this.webSocketService.init();
+
+    // Suscribirse a nuevos pedidos
+    this.pedidosSubscription = this.webSocketService.watch('/topic/admin/pedidos').subscribe((message: Message) => {
+      const nuevoPedido = JSON.parse(message.body);
+      console.log('Nuevo pedido recibido por WebSocket:', nuevoPedido);
+      
+      // Mostrar notificación
+      this.showSuccess(`🔔 Nuevo pedido recibido #${nuevoPedido.id}`);
+      
+      // Reproducir sonido de notificación
+      this.playNotificationSound();
+
+      // Actualizar lista de pedidos
+      this.pedidos.unshift(nuevoPedido);
+      this.calculateStats();
+      
+      // Si estamos en la pestaña de pedidos, recargar para asegurar orden
+      if (this.activeTab === 'pedidos') {
+        this.loadPedidos();
+      }
+    });
+  }
+
+  playNotificationSound(): void {
+    const audio = new Audio('assets/sounds/notification.mp3');
+    audio.play().catch(e => console.log('Error al reproducir sonido:', e));
   }
   
   // ========== NAVEGACIÓN ==========
