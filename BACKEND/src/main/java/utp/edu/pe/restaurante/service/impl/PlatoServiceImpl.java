@@ -64,6 +64,9 @@ public class PlatoServiceImpl implements PlatoService {
 	        Plato plato = platoRepository.findById(id)
 	                .orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
 
+	        // IMPORTANTE: Asignar el ID al platoDetails antes de validar
+	        // para que la validación de nombre único excluya este mismo plato
+	        platoDetails.setId(id);
 	        validatePlato(platoDetails);
 
 	        // Verificar categoría si se está actualizando
@@ -111,7 +114,15 @@ public class PlatoServiceImpl implements PlatoService {
 	        Plato plato = platoRepository.findById(id)
 	                .orElseThrow(() -> new ResourceNotFoundException(PLATO_NOT_FOUND + id));
 	        
-	        platoRepository.delete(plato);
+	        try {
+	            platoRepository.delete(plato);
+	        } catch (Exception e) {
+	            // Si falla la eliminación (probablemente por restricciones de clave foránea)
+	            throw new BusinessException(
+	                "No se puede eliminar el plato porque está asociado a pedidos existentes. " +
+	                "Puedes desactivarlo en su lugar."
+	            );
+	        }
 	    }
 
 	    @Override

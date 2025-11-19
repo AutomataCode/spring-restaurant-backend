@@ -303,6 +303,11 @@ export class Admin implements OnInit, OnDestroy {
           this.loadDashboard();
         },
         error: (err) => {
+          console.error('Error completo al guardar plato con imagen:', err);
+          console.error('Error response:', err.error);
+          console.error('Status:', err.status);
+          console.error('Datos enviados:', this.platoForm);
+          console.error('Imagen seleccionada:', this.selectedImage);
           let errorMessage = 'Error al guardar plato';
           if (err.error && err.error.message) {
             errorMessage = err.error.message;
@@ -311,7 +316,7 @@ export class Admin implements OnInit, OnDestroy {
           } else if (err.message) {
             errorMessage = err.message;
           }
-          this.showError(errorMessage);
+          this.showError(`${errorMessage} (Ver consola del navegador para más detalles)`);
           this.loading = false;
         }
       });
@@ -329,6 +334,10 @@ export class Admin implements OnInit, OnDestroy {
           this.loadDashboard();
         },
         error: (err) => {
+          console.error('Error completo al guardar plato:', err);
+          console.error('Error response:', err.error);
+          console.error('Status:', err.status);
+          console.error('Datos enviados:', this.platoForm);
           let errorMessage = 'Error al guardar plato';
           if (err.error && err.error.message) {
             errorMessage = err.error.message;
@@ -337,7 +346,7 @@ export class Admin implements OnInit, OnDestroy {
           } else if (err.message) {
             errorMessage = err.message;
           }
-          this.showError(errorMessage);
+          this.showError(`${errorMessage} (Ver consola del navegador para más detalles)`);
           this.loading = false;
         }
       });
@@ -354,8 +363,18 @@ export class Admin implements OnInit, OnDestroy {
         this.loadPlatos();
         this.loadDashboard();
       },
-      error: () => {
-        this.showError('Error al desactivar plato');
+      error: (error) => {
+        console.error('Error completo al desactivar plato:', error);
+        console.error('Error response:', error.error);
+        
+        let errorMessage = 'Error al desactivar plato';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        this.showError(errorMessage);
         this.loading = false;
       }
     });
@@ -387,7 +406,20 @@ export class Admin implements OnInit, OnDestroy {
         this.loadDashboard();
       },
       error: (error) => {
-        this.showError('Error al eliminar plato: ' + (error.error?.message || 'Error desconocido'));
+        console.error('Error completo al eliminar plato:', error);
+        console.error('Error response:', error.error);
+        console.error('Status:', error.status);
+        
+        let errorMessage = 'Error al eliminar plato';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.error && typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        this.showError(errorMessage + ' (Ver consola para más detalles)');
         this.loading = false;
       }
     });

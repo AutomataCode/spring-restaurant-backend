@@ -142,6 +142,40 @@ src/main/java/utp/edu/pe/restaurante/
     └── error/              # Respuestas de error
 ```
 
+## 🔧 Troubleshooting
+
+### Error: "WebSocket connection failed"
+**Solución:** Asegúrate de que el backend esté corriendo en `http://localhost:8080`. El frontend usa SockJS para conectarse al WebSocket.
+
+### Error: "No se puede eliminar el plato"
+**Causa:** El plato tiene pedidos asociados (restricción de base de datos)  
+**Solución:** Usa "Desactivar" en lugar de "Eliminar permanentemente"
+
+### Error al actualizar platos
+
+#### "Ya existe un plato con el nombre: X" (cuando NO cambias el nombre)
+**Solución:** ✅ **RESUELTO** - El backend ahora excluye correctamente el mismo plato de la validación de nombre único.
+
+#### Otros errores comunes:
+**Diagnóstico:**
+1. Abre la consola del navegador (F12)
+2. Verifica el mensaje de error específico
+3. Causas comunes:
+   - Intentando usar un nombre que otro plato ya tiene
+   - Categoría inexistente o inactiva
+   - Campos obligatorios vacíos
+
+### Frontend no inicia (Error de Vite)
+**Solución:**
+```bash
+cd FRONTEND
+npm cache clean --force
+rm -rf .angular node_modules/.vite
+npm start
+```
+
+Ver `SOLUCIONES_APLICADAS.md` para más detalles.
+
 ## 👥 Equipo de Desarrollo
 
 - Desarrollo: Grupo de Desarrollo Web Integrado - UTP
