@@ -1,0 +1,224 @@
+<!-- Navbar Principal -->
+<nav class="main-navbar">
+  <div class="navbar-content">
+    <a routerLink="/" class="logo-section">
+      <div class="logo">
+        <div class="logo-shield">G</div>
+      </div>
+      <div class="logo-text">RESTAURANTE GUSTITOS</div>
+    </a>
+    <div class="nav-links">
+      <a routerLink="/" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span>INICIO</span>
+      </a>
+      <a routerLink="/menu" class="nav-link active">
+        <span>MENÚ</span>
+      </a>
+      <a href="#" class="nav-link cart-link" (click)="toggleCart(); $event.preventDefault()">
+        <span>HACER PEDIDO</span>
+        @if (totalItems > 0) {
+        <span class="badge">{{ totalItems }}</span>
+        }
+      </a>
+      <a routerLink="/mis-pedidos" class="nav-link">
+        <span>MIS PEDIDOS</span>
+      </a>
+      @if (!isAuthenticated()) {
+      <button class="btn-auth" (click)="goToLogin()">
+        INICIAR SESIÓN
+      </button>
+      }
+      @if (isAuthenticated()) {
+      <button class="btn-auth btn-logout" (click)="logout()">
+        CERRAR SESIÓN
+      </button>
+      }
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="menu-wrapper">
+  <!-- Hero Header -->
+  <div class="menu-hero">
+    <div class="menu-hero-content">
+      <h1 class="menu-hero-title">Nuestro Menú</h1>
+      <p class="menu-hero-subtitle">Descubre nuestros deliciosos platos preparados con ingredientes frescos y auténticos
+        sabores peruanos</p>
+    </div>
+  </div>
+
+  <div class="menu-container">
+    <!-- Category Filters -->
+    <div class="category-section">
+      <div class="category-filters">
+        <button class="category-btn" [class.active]="categoriaSeleccionada === 'all'" (click)="filterByCategory('all')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+          </svg>
+          <span>Todos</span>
+        </button>
+        @for (categoria of categorias; track categoria.id) {
+        <button class="category-btn" [class.active]="categoriaSeleccionada === categoria.id.toString()"
+          (click)="filterByCategory(categoria.id)">
+          <span>{{ categoria.nombre }}</span>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+    <div class="loading-container">
+      <div class="spinner-wrapper">
+        <div class="spinner"></div>
+      </div>
+      <p class="loading-text">Cargando nuestro menú...</p>
+    </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && platosFiltrados.length === 0 && platosVisibles.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+      </div>
+      <h3>No hay platos disponibles</h3>
+      <p>Pronto tendremos más opciones deliciosas para ti</p>
+    </div>
+    }
+
+    <!-- Menu Items Grid -->
+    @if (!isLoading && platosFiltrados.length > 0) {
+    <div class="menu-grid">
+      @for (plato of platosVisibles; track plato.id) {
+      <div class="menu-card">
+        <div class="card-image-wrapper">
+          <div class="card-image-container">
+            <img [src]="getImageUrl(plato)" [alt]="plato.nombre" class="card-image" loading="lazy"
+              [attr.data-index]="$index">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="availability-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <span>Disponible</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="card-header">
+            <h3 class="card-title">{{ plato.nombre }}</h3>
+            <span class="card-category-badge">{{ plato.categoriaNombre || 'Sin categoría' }}</span>
+          </div>
+          <p class="card-description">
+            {{ plato.descripcion || 'Delicioso plato preparado con ingredientes frescos y seleccionados.' }}
+          </p>
+          <div class="card-info">
+            <div class="card-price-wrapper">
+              <span class="card-price-label">Precio</span>
+              <span class="card-price">S/ {{ plato.precio }}</span>
+            </div>
+            <div class="card-time-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span>{{ plato.tiempoPreparacion || 15 }} min</span>
+            </div>
+          </div>
+          <button class="add-btn" (click)="addToCart(plato)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span>Agregar al Carrito</span>
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Load More Trigger -->
+    @if (platosVisibles.length < platosFiltrados.length) { <div class="load-more-trigger">
+      <div class="loading-more">
+        <div class="spinner-small"></div>
+        <p>Cargando más platos...</p>
+      </div>
+  </div>
+  }
+  }
+</div>
+</div>
+
+<!-- Shopping Cart Sidebar -->
+<div class="cart-overlay" [class.active]="cartVisible" (click)="toggleCart()"></div>
+<div class="cart-sidebar" [class.active]="cartVisible">
+  <div class="cart-header">
+    <h2>Carrito de Compras</h2>
+    <button class="close-cart" (click)="toggleCart()">×</button>
+  </div>
+
+  @if (cartItems.length === 0) {
+  <div class="cart-empty">
+    <div class="empty-cart-icon">🛒</div>
+    <p>Tu carrito está vacío</p>
+    <p class="empty-cart-subtitle">Agrega productos del menú</p>
+  </div>
+  } @else {
+  <div class="cart-items">
+    @for (item of cartItems; track item.plato.id) {
+    <div class="cart-item">
+      <img [src]="getImageUrl(item.plato)" [alt]="item.plato.nombre" class="cart-item-image" loading="lazy">
+      <div class="cart-item-details">
+        <h4 class="cart-item-name">{{ item.plato.nombre }}</h4>
+        <p class="cart-item-price">S/ {{ item.plato.precio }}</p>
+        <div class="cart-item-controls">
+          <button class="quantity-btn" (click)="updateQuantity(item.plato.id, item.cantidad - 1)">−</button>
+          <span class="quantity">{{ item.cantidad }}</span>
+          <button class="quantity-btn" (click)="updateQuantity(item.plato.id, item.cantidad + 1)">+</button>
+          <button class="remove-btn" (click)="removeFromCart(item.plato.id)">🗑️</button>
+        </div>
+      </div>
+      <div class="cart-item-subtotal">
+        S/ {{ item.subtotal.toFixed(2) }}
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span class="total-label">Total:</span>
+      <span class="total-amount">S/ {{ totalPrice.toFixed(2) }}</span>
+    </div>
+    <button class="checkout-btn" (click)="checkoutBtn()">
+      Realizar Pedido
+    </button>
+    <button class="clear-cart-btn" (click)="clearCart()">
+      Vaciar Carrito
+    </button>
+  </div>
+  }
+</div>
+
+<!-- Floating Cart Button -->
+@if (totalItems > 0 && !cartVisible) {
+<button class="floating-cart-btn" (click)="toggleCart()">
+  <span class="cart-icon">🛒</span>
+  <span class="cart-badge">{{ totalItems }}</span>
+</button>
+}

@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot - AppRestauranteApiApplication",
+      "request": "launch",
+      "mainClass": "utp.edu.pe.restaurante.AppRestauranteApiApplication",
+      "projectName": "restaurante",
+      "args": "",
+      "envFile": "${workspaceFolder}/BACKEND/.env",
+      "cwd": "${workspaceFolder}/BACKEND"
+    }
+  ]
+}
+

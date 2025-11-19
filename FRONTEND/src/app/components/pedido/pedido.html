@@ -1,0 +1,274 @@
+<div class="pedido-container">
+  <!-- Header -->
+  <header class="pedido-header">
+    <div class="header-content">
+      <button class="back-btn" (click)="goToMenu()">← Volver al Menú</button>
+      <h1>Realizar Pedido</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="pedido-content">
+    <!-- Formulario de Pedido -->
+    @if (!showSuccess) {
+      <div class="pedido-form-section">
+        <form (ngSubmit)="onSubmit()" class="pedido-form">
+          <!-- Tipo de Pedido -->
+          <div class="form-section">
+            <h2 class="section-title">Tipo de Pedido</h2>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  name="tipoPedido" 
+                  value="DOMICILIO"
+                  [(ngModel)]="pedidoForm.tipoPedido">
+                <span class="radio-custom"></span>
+                <span class="radio-text">🚚 Domicilio</span>
+              </label>
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  name="tipoPedido" 
+                  value="LOCAL"
+                  [(ngModel)]="pedidoForm.tipoPedido">
+                <span class="radio-custom"></span>
+                <span class="radio-text">🏪 Local</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Información de Entrega -->
+          <div class="form-section">
+            <h2 class="section-title">Información de Entrega</h2>
+            
+            @if (pedidoForm.tipoPedido === 'DOMICILIO') {
+              <div class="form-group">
+                <label for="direccion">Dirección de Entrega *</label>
+                <textarea 
+                  id="direccion"
+                  [(ngModel)]="pedidoForm.direccionEntrega"
+                  name="direccionEntrega"
+                  rows="3"
+                  placeholder="Ingrese su dirección completa"
+                  required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="instrucciones">Instrucciones de Entrega</label>
+                <textarea 
+                  id="instrucciones"
+                  [(ngModel)]="pedidoForm.instruccionesEntrega"
+                  name="instruccionesEntrega"
+                  rows="2"
+                  placeholder="Referencias, indicaciones, etc."></textarea>
+              </div>
+            }
+
+            <div class="form-group">
+              <label for="telefono">Teléfono de Contacto *</label>
+              <input 
+                type="tel"
+                id="telefono"
+                [(ngModel)]="pedidoForm.telefonoContacto"
+                name="telefonoContacto"
+                placeholder="999 999 999"
+                required>
+            </div>
+          </div>
+
+          <!-- Método de Pago -->
+          <div class="form-section">
+            <h2 class="section-title">Método de Pago</h2>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  name="metodoPago" 
+                  value="EFECTIVO"
+                  [(ngModel)]="pedidoForm.metodoPago">
+                <span class="radio-custom"></span>
+                <span class="radio-text">💵 Efectivo</span>
+              </label>
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  name="metodoPago" 
+                  value="YAPE"
+                  [(ngModel)]="pedidoForm.metodoPago">
+                <span class="radio-custom"></span>
+                <span class="radio-text">💚 Yape</span>
+              </label>
+            </div>
+
+            @if (pedidoForm.metodoPago === 'EFECTIVO') {
+              <div class="form-group">
+                <label for="cambioPara">Cambio para (S/) *</label>
+                <input 
+                  type="number"
+                  id="cambioPara"
+                  [(ngModel)]="pedidoForm.cambioPara"
+                  name="cambioPara"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  required>
+              </div>
+            }
+
+            @if (pedidoForm.metodoPago === 'YAPE' && yapeConfig) {
+              <div class="yape-info-box">
+                <div class="yape-header">
+                  <h3>💚 Pago con Yape</h3>
+                </div>
+                <div class="yape-content">
+                  <div class="yape-code-section">
+                    <p class="yape-label">Código Yape:</p>
+                    <p class="yape-number">{{ yapeConfig.codigo }}</p>
+                    @if (yapeConfig.qrUrl) {
+                      <div class="qr-image-container">
+                        <img [src]="yapeConfig.qrUrl" alt="Código QR Yape" class="qr-image" (error)="onQrImageError($event)">
+                      </div>
+                    }
+                  </div>
+                  <div class="yape-number-section">
+                    <p class="yape-label">Número Yape:</p>
+                    <p class="yape-number">{{ yapeConfig.numero }}</p>
+                  </div>
+                  <div class="yape-instructions">
+                    <p class="instructions-title">📱 Instrucciones:</p>
+                    <ol class="instructions-list">
+                      <li>Realiza el pago a este código Yape</li>
+                      <li>Envía la captura de pantalla al número:</li>
+                      <li class="whatsapp-number">
+                        <a [href]="'https://wa.me/' + yapeConfig.whatsapp" target="_blank" class="whatsapp-link">
+                          📱 {{ yapeConfig.whatsapp }}
+                        </a>
+                      </li>
+                      <li>Tu pedido será confirmado después de verificar el pago</li>
+                    </ol>
+                  </div>
+                  <div class="yape-warning">
+                    ⚠️ Tu pedido quedará en espera hasta confirmar el pago
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Resumen del Pedido -->
+          <div class="form-section">
+            <h2 class="section-title">Resumen del Pedido</h2>
+            <div class="resumen-items">
+              @for (item of cartItems; track item.plato.id) {
+                <div class="resumen-item">
+                  <div class="resumen-item-info">
+                    <h4>{{ item.plato.nombre }}</h4>
+                    <p>Cantidad: {{ item.cantidad }} × S/ {{ item.plato.precio }}</p>
+                  </div>
+                  <div class="resumen-item-total">
+                    S/ {{ item.subtotal.toFixed(2) }}
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="resumen-total">
+              <span class="total-label">Total:</span>
+              <span class="total-amount">S/ {{ totalPrice.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="error-message">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            class="submit-btn"
+            [disabled]="isLoading">
+            @if (isLoading) {
+              <span class="spinner-small"></span>
+              Procesando...
+            } @else {
+              Confirmar Pedido
+            }
+          </button>
+        </form>
+      </div>
+    }
+
+    <!-- Pedido Creado Exitosamente -->
+    @if (showSuccess && pedidoCreado) {
+      <div class="success-section" id="pedido-resultado">
+        <div class="success-icon">✅</div>
+        <h2>¡Pedido Realizado con Éxito!</h2>
+        <p class="success-message">Tu pedido ha sido registrado correctamente</p>
+
+        <div class="pedido-details">
+          <div class="detail-card">
+            <h3>Detalles del Pedido</h3>
+            <div class="detail-item">
+              <span class="detail-label">Número de Pedido:</span>
+              <span class="detail-value">#{{ pedidoCreado.id }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Tipo:</span>
+              <span class="detail-value">{{ pedidoCreado.tipoPedido }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Estado:</span>
+              <span class="detail-value status-badge" [class]="'status-' + pedidoCreado.estado.toLowerCase()">
+                {{ pedidoCreado.estado }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Total:</span>
+              <span class="detail-value total-highlight">S/ {{ pedidoCreado.total.toFixed(2) }}</span>
+            </div>
+            @if (pedidoCreado.direccionEntrega) {
+              <div class="detail-item">
+                <span class="detail-label">Dirección:</span>
+                <span class="detail-value">{{ pedidoCreado.direccionEntrega }}</span>
+              </div>
+            }
+            <div class="detail-item">
+              <span class="detail-label">Método de Pago:</span>
+              <span class="detail-value">{{ pedidoCreado.metodoPago }}</span>
+            </div>
+          </div>
+
+          @if (pedidoCreado.detalles && pedidoCreado.detalles.length > 0) {
+            <div class="detail-card">
+              <h3>Items del Pedido</h3>
+              @for (detalle of pedidoCreado.detalles; track detalle.id) {
+                <div class="detalle-item">
+                  <div class="detalle-info">
+                    <h4>{{ detalle.platoNombre || 'Plato' }}</h4>
+                    <p>Cantidad: {{ detalle.cantidad }} × S/ {{ detalle.precioUnitario }}</p>
+                  </div>
+                  <div class="detalle-subtotal">
+                    S/ {{ detalle.subtotal.toFixed(2) }}
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="success-actions">
+          <button class="action-btn primary" (click)="goToPedidos()">
+            Ver Mis Pedidos
+          </button>
+          <button class="action-btn secondary" (click)="goToMenu()">
+            Seguir Comprando
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+

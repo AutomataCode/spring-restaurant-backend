@@ -1,0 +1,228 @@
+<div class="mis-pedidos-container">
+  <!-- Header -->
+  <header class="pedidos-header">
+    <div class="header-content">
+      <button class="back-btn" (click)="goToMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        <span>Volver al Menú</span>
+      </button>
+      <h1>Mis Pedidos</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="pedidos-content">
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando pedidos...</p>
+      </div>
+    }
+
+    <!-- Error Message -->
+    @if (errorMessage && !isLoading) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && pedidos.length === 0 && !errorMessage) {
+      <div class="empty-state">
+        <div class="empty-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="plate-icon">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <h2>No te quedes con hambre</h2>
+        <p>Comienza a ordenar desde nuestro menú y disfruta de los mejores sabores peruanos</p>
+        <button class="action-btn" (click)="goToMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span>Ver Menú</span>
+        </button>
+      </div>
+    }
+
+    <!-- Pedidos List -->
+    @if (!isLoading && pedidos.length > 0) {
+      <div class="pedidos-list">
+        @for (pedido of pedidos; track pedido.id) {
+          <div class="pedido-card" (click)="openPedidoModal(pedido)">
+            <!-- Vista Previa Compacta -->
+            <div class="pedido-preview">
+              <div class="preview-header">
+                <div class="preview-icon-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="preview-icon">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                </div>
+                <div class="preview-info">
+                  <h3 class="pedido-number">Pedido #{{ pedido.id }}</h3>
+                  <span class="pedido-date">{{ formatDate(pedido.fechaPedido) }}</span>
+                </div>
+                <div class="pedido-status">
+                  <span class="estado-badge" [class]="getEstadoClass(pedido.estado)">
+                    {{ getEstadoLabel(pedido.estado) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="preview-content">
+                <div class="preview-details">
+                  <div class="preview-item">
+                    <span class="preview-label">Tipo:</span>
+                    <span class="preview-value">{{ pedido.tipoPedido }}</span>
+                  </div>
+                  @if (pedido.direccionEntrega) {
+                    <div class="preview-item">
+                      <span class="preview-label">Dirección:</span>
+                      <span class="preview-value">{{ pedido.direccionEntrega }}</span>
+                    </div>
+                  }
+                  @if (pedido.detalles && pedido.detalles.length > 0) {
+                    <div class="preview-item">
+                      <span class="preview-label">Items:</span>
+                      <span class="preview-value">{{ getTotalItems(pedido) }} artículo(s)</span>
+                    </div>
+                  }
+                </div>
+                <div class="preview-total">
+                  <span class="total-amount">S/ {{ pedido.total.toFixed(2) }}</span>
+                </div>
+              </div>
+              
+              <div class="preview-footer">
+                <span class="click-hint">Click para ver detalles completos</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal de Detalles del Pedido -->
+@if (showModal && selectedPedido) {
+  <div class="modal-overlay" (click)="closePedidoModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-content">
+          <div class="modal-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <h2>Detalles del Pedido #{{ selectedPedido.id }}</h2>
+        </div>
+        <button class="modal-close" (click)="closePedidoModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Información del Pedido -->
+        <div class="modal-section">
+          <div class="modal-info-row">
+            <div class="info-item">
+              <span class="info-label">Fecha y Hora:</span>
+              <span class="info-value">{{ formatDate(selectedPedido.fechaPedido) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Estado:</span>
+              <span class="estado-badge" [class]="getEstadoClass(selectedPedido.estado)">
+                {{ getEstadoLabel(selectedPedido.estado) }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="modal-info-row">
+            <div class="info-item">
+              <span class="info-label">Tipo de Pedido:</span>
+              <span class="info-value">{{ selectedPedido.tipoPedido }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Método de Pago:</span>
+              <span class="info-value">{{ selectedPedido.metodoPago }}</span>
+            </div>
+          </div>
+
+          @if (selectedPedido.direccionEntrega) {
+            <div class="modal-info-row">
+              <div class="info-item full-width">
+                <span class="info-label">Dirección de Entrega:</span>
+                <span class="info-value">{{ selectedPedido.direccionEntrega }}</span>
+              </div>
+            </div>
+          }
+
+          @if (selectedPedido.telefonoContacto) {
+            <div class="modal-info-row">
+              <div class="info-item">
+                <span class="info-label">Teléfono de Contacto:</span>
+                <span class="info-value">{{ selectedPedido.telefonoContacto }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Items del Pedido -->
+        @if (selectedPedido.detalles && selectedPedido.detalles.length > 0) {
+          <div class="modal-section">
+            <h3 class="section-title">Items del Pedido</h3>
+            <div class="modal-detalles-list">
+              @for (detalle of selectedPedido.detalles; track detalle.id) {
+                <div class="modal-detalle-item">
+                  <div class="modal-detalle-info">
+                    <h4 class="modal-detalle-nombre">{{ detalle.platoNombre || 'Plato' }}</h4>
+                    <div class="modal-detalle-details">
+                      <span>Cantidad: {{ detalle.cantidad }}</span>
+                      <span>×</span>
+                      <span>Precio Unitario: S/ {{ detalle.precioUnitario.toFixed(2) }}</span>
+                    </div>
+                    @if (detalle.notas) {
+                      <p class="modal-detalle-notas">
+                        <strong>Notas:</strong> {{ detalle.notas }}
+                      </p>
+                    }
+                  </div>
+                  <div class="modal-detalle-subtotal">
+                    S/ {{ detalle.subtotal.toFixed(2) }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Total -->
+        <div class="modal-total-section">
+          <div class="modal-total">
+            <span class="modal-total-label">Total del Pedido:</span>
+            <span class="modal-total-amount">S/ {{ selectedPedido.total.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+

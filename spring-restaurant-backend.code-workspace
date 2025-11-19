@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"name": "Backend",
+			"path": "BACKEND"
+		},
+		{
+			"name": "Frontend",
+			"path": "FRONTEND"
+		},
+		{
+			"name": "Root",
+			"path": "."
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"java.import.maven.enabled": true,
+		"files.exclude": {
+			"**/target": true,
+			"**/node_modules": true
+		}
+	}
+}
+

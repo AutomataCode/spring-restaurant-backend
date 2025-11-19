@@ -1,0 +1,229 @@
+<!-- Barra Superior Minimalista -->
+<div class="top-bar">
+  <div class="top-bar-content">
+    <div class="contact-info">
+      <a href="tel:4491395" class="contact-item">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path
+            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+        </svg>
+        <span>449 1395</span>
+      </a>
+      <a href="mailto:administracion@saboresperuanos.pe" class="contact-item">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,13 2,6" />
+        </svg>
+        <span>administracion&#64;saboresperuanos.pe</span>
+      </a>
+    </div>
+    <div class="social-icons">
+      <a href="#" class="social-icon" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+        </svg>
+      </a>
+      <a href="#" class="social-icon" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Navbar Principal -->
+<nav class="main-navbar">
+  <div class="navbar-content">
+    <a routerLink="/" class="logo-section">
+      <div class="logo">
+        <div class="logo-shield">G</div>
+      </div>
+      <div class="logo-text">RESTAURANTE GUSTITOS</div>
+    </a>
+    <div class="nav-links">
+      <a routerLink="/menu" class="nav-link" routerLinkActive="active">
+        <span>MENÚ</span>
+      </a>
+      <a routerLink="/pedido" class="nav-link" routerLinkActive="active">
+        <span>HACER PEDIDO</span>
+      </a>
+      <a routerLink="/mis-pedidos" class="nav-link" routerLinkActive="active">
+        <span>MIS PEDIDOS</span>
+      </a>
+      @if (isAuthenticated && currentUser) {
+      <div class="welcome-user">
+        <span class="welcome-text">Hola,</span>
+        <span class="user-name">{{ currentUser.nombre }}</span>
+      </div>
+      }
+      @if (!isAuthenticated) {
+      <button class="btn-auth" (click)="goToLogin()">
+        INICIAR SESIÓN
+      </button>
+      }
+      @if (isAuthenticated) {
+      <button class="btn-auth btn-logout" (click)="logout()">
+        CERRAR SESIÓN
+      </button>
+      }
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-background">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">En esta casa sí hay cariño</h1>
+        <p class="hero-subtitle">Más de una década contigo</p>
+        <div class="hero-actions">
+          <a routerLink="/menu" class="btn-primary">Ver Menú</a>
+          <a routerLink="/pedido" class="btn-secondary">Hacer Pedido</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección de Características -->
+<section class="features-section">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+        </div>
+        <h3>Comida Auténtica</h3>
+        <p>Platos tradicionales preparados con ingredientes frescos y de la más alta calidad</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <h3>Entrega Rápida</h3>
+        <p>Preparación rápida y entrega a tiempo para que disfrutes tu comida fresca</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <h3>Calidad Garantizada</h3>
+        <p>Comprometidos con la excelencia en cada plato que servimos</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Galería de Platos Destacados -->
+<section class="gallery-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Platos Destacados</h2>
+      <p class="section-subtitle">Nuestras especialidades más populares</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item" data-lazy-bg="/assets/images/platos-destacados/ceviche.jpg">
+        <div class="gallery-image"></div>
+        <div class="gallery-overlay">
+          <h4>Ceviche</h4>
+          <p>Fresco y delicioso</p>
+        </div>
+      </div>
+      <div class="gallery-item" data-lazy-bg="/assets/images/platos-destacados/lomo saltado.jpg">
+        <div class="gallery-image"></div>
+        <div class="gallery-overlay">
+          <h4>Lomo Saltado</h4>
+          <p>Sabores únicos</p>
+        </div>
+      </div>
+      <div class="gallery-item" data-lazy-bg="/assets/images/platos-destacados/arroz con pollo.jpg">
+        <div class="gallery-image"></div>
+        <div class="gallery-overlay">
+          <h4>Arroz con Pollo</h4>
+          <p>Tradición peruana</p>
+        </div>
+      </div>
+      <div class="gallery-item" data-lazy-bg="/assets/images/platos-destacados/anticuchos.jpg">
+        <div class="gallery-image"></div>
+        <div class="gallery-overlay">
+          <h4>Anticuchos</h4>
+          <p>A la brasa</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección de Horarios -->
+<section class="schedule-section">
+  <div class="container">
+    <div class="schedule-card">
+      <div class="schedule-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      </div>
+      <h3 class="schedule-title">Horario de Atención</h3>
+      <div class="schedule-content">
+        <div class="schedule-item">
+          <span class="schedule-days">Lunes - Sábado</span>
+          <span class="schedule-time">09:00am - 11:00pm</span>
+        </div>
+        <div class="schedule-item">
+          <span class="schedule-days">Domingo - Feriados</span>
+          <span class="schedule-time">09:00am - 6:00pm</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="main-footer">
+  <div class="footer-content">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="logo-shield">G</div>
+        </div>
+        <h3>RESTAURANTE GUSTITOS</h3>
+        <p>Auténtica comida peruana con el mejor sabor</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Navegación</h4>
+          <a routerLink="/menu">Menú</a>
+          <a routerLink="/pedido">Hacer Pedido</a>
+          <a routerLink="/mis-pedidos">Mis Pedidos</a>
+        </div>
+        <div class="footer-column">
+          <h4>Contacto</h4>
+          <a href="tel:4491395">449 1395</a>
+          <a href="mailto:administracion@saboresperuanos.pe">administracion&#64;saboresperuanos.pe</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Restaurante Gustitos. Todos los derechos reservados.</p>
+      <div class="footer-badge">
+        <span>RECOMENDADO 2021</span>
+        <span>RESTAURANT GURU</span>
+      </div>
+    </div>
+  </div>
+</footer>
