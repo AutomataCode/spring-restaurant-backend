@@ -7,6 +7,8 @@ import { ConfigService, YapeConfig } from '../../services/config.service';
 import { CartItem } from '../../models/plato.model';
 import { CreatePedidoRequest, Pedido } from '../../models/pedido.model';
 
+const DEFAULT_YAPE_CONTACT = '908556931';
+
 @Component({
   selector: 'app-pedido',
   templateUrl: './pedido.html',
@@ -140,6 +142,9 @@ export class PedidoComponent implements OnInit {
         this.isLoading = false;
         this.pedidoCreado = pedido;
         this.showSuccess = true;
+        if (pedido.metodoPago?.toUpperCase() === 'YAPE') {
+          this.sendPedidoInfoToWhatsapp(pedido);
+        }
         this.cartService.clearCart();
         
         // Scroll al resultado
@@ -171,6 +176,68 @@ export class PedidoComponent implements OnInit {
 
   goToPedidos(): void {
     this.router.navigate(['/mis-pedidos']);
+  }
+
+  private sendPedidoInfoToWhatsapp(pedido: Pedido): void {
+    const whatsappNumber = (this.yapeConfig?.whatsapp || DEFAULT_YAPE_CONTACT).replace(/\D/g, '');
+    if (!whatsappNumber) {
+      return;
+    }
+
+    const message = this.buildWhatsappMessage(pedido);
+    const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+    if (typeof window !== 'undefined') {
+      window.open(waUrl, '_blank');
+    }
+  }
+
+  private buildWhatsappMessage(pedido: Pedido): string {
+    const lineItems = this.buildLineItems(pedido);
+    const lines = [
+      'Hola, acabo de realizar un pedido con pago Yape.',
+      `Pedido #${pedido.id}`,
+      `Total: S/ ${pedido.total?.toFixed(2) ?? this.totalPrice.toFixed(2)}`,
+      `Cliente: ${this.authService.getCurrentUser()?.nombre || 'Cliente'}`,
+      `Teléfono: ${pedido.telefonoContacto || this.pedidoForm.telefonoContacto || 'Sin teléfono'}`,
+      `Tipo: ${pedido.tipoPedido}`,
+    ];
+
+    if (pedido.direccionEntrega || this.pedidoForm.direccionEntrega) {
+      lines.push(`Dirección: ${pedido.direccionEntrega || this.pedidoForm.direccionEntrega}`);
+    }
+
+    if (pedido.instruccionesEntrega || this.pedidoForm.instruccionesEntrega) {
+      lines.push(`Indicaciones: ${pedido.instruccionesEntrega || this.pedidoForm.instruccionesEntrega}`);
+    }
+
+    if (lineItems.length > 0) {
+      lines.push('Detalle del pedido:');
+      lines.push(...lineItems);
+    }
+
+    lines.push('Gracias 👍');
+    return lines.join('\n');
+  }
+
+  private buildLineItems(pedido: Pedido): string[] {
+    const detalles = pedido.detalles && pedido.detalles.length > 0
+      ? pedido.detalles
+      : this.pedidoForm.detalles;
+
+    if (!detalles || detalles.length === 0) {
+      return [];
+    }
+
+    return detalles.map((detalle, index) => {
+      const nombre = 'platoNombre' in detalle && detalle.platoNombre
+        ? detalle.platoNombre
+        : this.cartItems[index]?.plato.nombre || 'Plato';
+      const subtotal = 'subtotal' in detalle && typeof detalle.subtotal === 'number'
+        ? detalle.subtotal
+        : detalle.cantidad * detalle.precioUnitario;
+      return `• ${detalle.cantidad} x ${nombre} (S/ ${subtotal.toFixed(2)})`;
+    });
   }
 }
 
