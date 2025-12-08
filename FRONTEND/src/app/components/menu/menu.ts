@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { PlatoService } from '../../services/plato.service';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
+import { ImageService } from '../../services/image.service';
 import { Plato, Categoria, CartItem } from '../../models/plato.model';
 import { Subscription } from 'rxjs';
 
@@ -34,6 +35,7 @@ export class Menu implements OnInit, OnDestroy, AfterViewInit {
     private platoService: PlatoService,
     private cartService: CartService,
     private authService: AuthService,
+    private imageService: ImageService,
     private router: Router
   ) {}
 
@@ -204,70 +206,10 @@ export class Menu implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getImageUrl(plato: Plato): string {
-    // PRIORIDAD 1: Si el plato ya tiene una URL de imagen (del backend), usarla
-    if (plato.imagenUrl && plato.imagenUrl.trim() !== '') {
-      // Si es una URL completa (http/https), devolverla directamente
-      if (plato.imagenUrl.startsWith('http://') || plato.imagenUrl.startsWith('https://')) {
-        return plato.imagenUrl;
-      }
-      
-      // Si es una ruta relativa del backend (ej: uploads/platos/...), construir la URL completa
-      // Esto corrige el problema de imágenes rotas en otros navegadores
-      if (plato.imagenUrl.startsWith('uploads/') || plato.imagenUrl.startsWith('/uploads/')) {
-        // Asegurar que no haya doble slash al principio
-        const cleanPath = plato.imagenUrl.startsWith('/') ? plato.imagenUrl.substring(1) : plato.imagenUrl;
-        return `http://localhost:8080/${cleanPath}`;
-      }
-
-      // Si es una ruta relativa del frontend (ej: /assets/...), devolverla
-      if (plato.imagenUrl.startsWith('/assets/')) {
-        return plato.imagenUrl;
-      }
-    }
-    
-    // PRIORIDAD 2: Buscar imagen local basada en el nombre del plato
-    // Esto funciona para platos que ya tienen imágenes guardadas localmente en assets
-    const imagenLocal = this.getLocalImagePath(plato.nombre);
-    if (imagenLocal) {
-      return imagenLocal;
-    }
-    
-    // PRIORIDAD 3: Imagen por defecto/placeholder
-    return '/assets/images/platos/default.svg';
+    return this.imageService.getPlatoImageUrl(plato);
   }
 
-  private getLocalImagePath(nombrePlato: string): string | null {
-    // Normalizar el nombre del plato para buscar la imagen
-    // Convertir a minúsculas, eliminar acentos, reemplazar espacios con guiones
-    const normalized = nombrePlato
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-      .replace(/\s+/g, '-') // Reemplazar espacios con guiones
-      .replace(/[^a-z0-9-]/g, ''); // Eliminar caracteres especiales
-    
-    // Mapeo manual de nombres de platos comunes a nombres de archivo
-    // Puedes agregar más mapeos aquí si tienes nombres específicos
-    const imageMap: { [key: string]: string } = {
-      'ceviche': 'ceviche',
-      'lomo-saltado': 'lomo-saltado',
-      'arroz-con-pollo': 'arroz-con-pollo',
-      'anticuchos': 'anticuchos',
-      'pollo-a-la-brasa': 'pollo-a-la-brasa',
-      'aji-de-gallina': 'aji-de-gallina',
-      'causa-limena': 'causa-limena',
-      'papa-a-la-huancaina': 'papa-a-la-huancaina',
-    };
-    
-    // Buscar en el mapeo primero (para nombres exactos)
-    const mappedName = imageMap[normalized];
-    if (mappedName) {
-      return `/assets/images/platos/${mappedName}.jpg`;
-    }
-    
-    // Si no está en el mapeo, intentar usar el nombre normalizado directamente
-    // Esto permite que cualquier plato nuevo con imagen local funcione automáticamente
-    // Ejemplo: "Pollo a la Brasa" → buscará "pollo-a-la-brasa.jpg"
-    return `/assets/images/platos/${normalized}.jpg`;
+  onImageError(event: Event): void {
+    this.imageService.handleImageError(event);
   }
 }

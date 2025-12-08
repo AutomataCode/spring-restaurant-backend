@@ -4,6 +4,7 @@ import { CartService } from '../../services/cart.service';
 import { PedidoService } from '../../services/pedido.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService, YapeConfig } from '../../services/config.service';
+import { ImageService } from '../../services/image.service';
 import { CartItem } from '../../models/plato.model';
 import { CreatePedidoRequest, Pedido } from '../../models/pedido.model';
 
@@ -37,6 +38,7 @@ export class PedidoComponent implements OnInit {
     private pedidoService: PedidoService,
     private authService: AuthService,
     private configService: ConfigService,
+    private imageService: ImageService,
     private router: Router
   ) {}
 
@@ -243,6 +245,14 @@ export class PedidoComponent implements OnInit {
 
   goToPedidos(): void {
     this.router.navigate(['/mis-pedidos']);
+  }
+
+  getImageUrl(plato: any): string {
+    return this.imageService.getPlatoImageUrl(plato);
+  }
+
+  onImageError(event: Event): void {
+    this.imageService.handleImageError(event);
   }
 }
 

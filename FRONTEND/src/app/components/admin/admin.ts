@@ -46,13 +46,14 @@ export class Admin implements OnInit {
     descripcion: '',
     precio: 0,
     categoriaId: null,
+    imagenUrl: '',
     tiempoPreparacion: 0,
     disponibleDomicilio: true,
     activo: true
   };
   
-  selectedImage: File | null = null;
   imagePreview: string | null = null;
+  uploadingImage: boolean = false;
   
   categoriaForm: any = {
     nombre: '',
@@ -187,7 +188,6 @@ export class Admin implements OnInit {
   }
   
   openPlatoModal(plato?: Plato): void {
-    this.selectedImage = null;
     this.imagePreview = null;
     
     if (plato) {
@@ -202,12 +202,8 @@ export class Admin implements OnInit {
         disponibleDomicilio: plato.disponibleDomicilio ?? true,
         activo: plato.activo ?? true
       };
-      // Si el plato tiene imagen, mostrar preview
-      if (plato.imagenUrl) {
-        this.imagePreview = plato.imagenUrl.startsWith('http') 
-          ? plato.imagenUrl 
-          : `http://localhost:8080${plato.imagenUrl}`;
-      }
+      // Actualizar preview de la imagen
+      this.updateImagePreview();
     } else {
       this.editingPlato = null;
       this.platoForm = {
@@ -215,6 +211,7 @@ export class Admin implements OnInit {
         descripcion: '',
         precio: 0,
         categoriaId: null,
+        imagenUrl: '',
         tiempoPreparacion: 0,
         disponibleDomicilio: true,
         activo: true
@@ -226,20 +223,28 @@ export class Admin implements OnInit {
   closePlatoModal(): void {
     this.showPlatoModal = false;
     this.editingPlato = null;
-    this.selectedImage = null;
     this.imagePreview = null;
   }
   
-  onImageSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedImage = file;
-      // Crear preview
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.imagePreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
+  updateImagePreview(): void {
+    if (this.platoForm.imagenUrl && this.platoForm.imagenUrl.trim() !== '') {
+      const url = this.platoForm.imagenUrl.trim();
+      // Si es una URL completa, usarla directamente
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        this.imagePreview = url;
+      } 
+      // Si es una ruta relativa del backend, construir la URL completa
+      else if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+        const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+        this.imagePreview = `http://localhost:8080/${cleanPath}`;
+      }
+      // Si es otra ruta, asumir que es del backend
+      else {
+        const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+        this.imagePreview = `http://localhost:8080/${cleanPath}`;
+      }
+    } else {
+      this.imagePreview = null;
     }
   }
   
@@ -251,42 +256,10 @@ export class Admin implements OnInit {
     
     this.loading = true;
     
-    // Si hay una imagen seleccionada, usar el método con FormData
-    if (this.selectedImage) {
-      const operation = this.editingPlato
-        ? this.adminService.updatePlatoWithImage(this.editingPlato.id, this.platoForm, this.selectedImage)
-        : this.adminService.createPlatoWithImage(this.platoForm, this.selectedImage);
-      
-      operation.subscribe({
-        next: () => {
-          this.showSuccess(this.editingPlato ? 'Plato actualizado' : 'Plato creado');
-          this.closePlatoModal();
-          this.loadPlatos();
-          this.loadDashboard();
-        },
-        error: (err) => {
-          console.error('Error completo al guardar plato con imagen:', err);
-          console.error('Error response:', err.error);
-          console.error('Status:', err.status);
-          console.error('Datos enviados:', this.platoForm);
-          console.error('Imagen seleccionada:', this.selectedImage);
-          let errorMessage = 'Error al guardar plato';
-          if (err.error && err.error.message) {
-            errorMessage = err.error.message;
-          } else if (err.error && typeof err.error === 'string') {
-            errorMessage = err.error;
-          } else if (err.message) {
-            errorMessage = err.message;
-          }
-          this.showError(`${errorMessage} (Ver consola del navegador para más detalles)`);
-          this.loading = false;
-        }
-      });
-    } else {
-      // Si no hay imagen, usar el método normal
-      const operation = this.editingPlato
-        ? this.adminService.updatePlato(this.editingPlato.id, this.platoForm)
-        : this.adminService.createPlato(this.platoForm);
+    // Usar el método normal con imagenUrl
+    const operation = this.editingPlato
+      ? this.adminService.updatePlato(this.editingPlato.id, this.platoForm)
+      : this.adminService.createPlato(this.platoForm);
       
       operation.subscribe({
         next: () => {
@@ -312,7 +285,6 @@ export class Admin implements OnInit {
           this.loading = false;
         }
       });
-    }
   }
   
   desactivarPlato(id: number): void {

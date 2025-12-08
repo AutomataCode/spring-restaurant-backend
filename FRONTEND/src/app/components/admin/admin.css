@@ -728,6 +728,31 @@
 /* ============================================
    BOTONES
    ============================================ */
+.btn-upload-image {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+}
+
+.btn-upload-image:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4);
+}
+
+.btn-upload-image:active {
+  transform: translateY(0);
+}
+
 .btn-primary,
 .btn-secondary,
 .btn-success {

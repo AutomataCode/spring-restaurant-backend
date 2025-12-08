@@ -322,7 +322,7 @@
           @for (item of cartItems; track item.plato.id) {
             <div class="summary-item">
               <div class="summary-item-image">
-                <div class="item-image-placeholder">{{ item.plato.nombre.charAt(0) }}</div>
+                <img [src]="getImageUrl(item.plato)" [alt]="item.plato.nombre" class="summary-item-img" (error)="onImageError($event)">
               </div>
               <div class="summary-item-details">
                 <h4>{{ item.plato.nombre }}</h4>

@@ -656,10 +656,35 @@
           </div>
           <div class="form-group">
             <label>Imagen</label>
-            <input type="file" accept="image/*" (change)="onImageSelected($event)" name="imagen">
+            <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+              <button type="button" class="btn-upload-image" (click)="fileInput.click()">
+                📤 Subir Imagen
+              </button>
+              <input 
+                type="file" 
+                #fileInput
+                accept="image/*" 
+                (change)="onImageFileSelected($event)" 
+                style="display: none;">
+            </div>
+            <input 
+              type="text" 
+              [(ngModel)]="platoForm.imagenUrl" 
+              name="imagenUrl" 
+              placeholder="URL de imagen (ej: https://ejemplo.com/imagen.jpg o /uploads/platos/imagen.jpg)"
+              (input)="updateImagePreview()"
+              style="margin-top: 8px;">
+            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+              Puedes subir una imagen desde tu computadora o ingresar una URL de internet
+            </small>
+            @if (uploadingImage) {
+              <div style="margin-top: 8px; color: #666; font-size: 12px;">
+                ⏳ Subiendo imagen...
+              </div>
+            }
             @if (imagePreview) {
               <div style="margin-top: 10px;">
-                <img [src]="imagePreview" alt="Vista previa" style="max-width: 200px; max-height: 200px; border-radius: 4px;">
+                <img [src]="imagePreview" alt="Vista previa" style="max-width: 200px; max-height: 200px; border-radius: 4px; border: 1px solid #ddd;">
               </div>
             }
           </div>

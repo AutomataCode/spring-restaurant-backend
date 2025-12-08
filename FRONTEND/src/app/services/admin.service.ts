@@ -131,5 +131,10 @@ export class AdminService {
   deletePedido(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/pedidos/${id}`);
   }
+
+  // ========== SUBIDA DE ARCHIVOS ==========
+  uploadPlatoImage(formData: FormData): Observable<any> {
+    return this.http.post<any>('http://localhost:8080/api/files/upload/plato', formData);
+  }
 }
 

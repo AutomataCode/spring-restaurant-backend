@@ -107,7 +107,7 @@
         <div class="card-image-wrapper">
           <div class="card-image-container">
             <img [src]="getImageUrl(plato)" [alt]="plato.nombre" class="card-image" loading="lazy"
-              [attr.data-index]="$index">
+              [attr.data-index]="$index" (error)="onImageError($event)">
             <div class="image-overlay"></div>
           </div>
           <div class="availability-badge">
@@ -182,7 +182,7 @@
   <div class="cart-items">
     @for (item of cartItems; track item.plato.id) {
     <div class="cart-item">
-      <img [src]="getImageUrl(item.plato)" [alt]="item.plato.nombre" class="cart-item-image" loading="lazy">
+      <img [src]="getImageUrl(item.plato)" [alt]="item.plato.nombre" class="cart-item-image" loading="lazy" (error)="onImageError($event)">
       <div class="cart-item-details">
         <h4 class="cart-item-name">{{ item.plato.nombre }}</h4>
         <p class="cart-item-price">S/ {{ item.plato.precio }}</p>

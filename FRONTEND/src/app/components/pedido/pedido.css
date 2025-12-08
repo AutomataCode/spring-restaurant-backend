@@ -338,6 +338,14 @@
   font-family: var(--font-primary);
 }
 
+.summary-item-img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
 .summary-item-details {
   flex: 1;
   min-width: 0;
