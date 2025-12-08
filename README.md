@@ -166,13 +166,29 @@ src/main/java/utp/edu/pe/restaurante/
    - Campos obligatorios vacíos
 
 ### Frontend no inicia (Error de Vite)
-**Solución:**
+
+#### Error: "Failed to update Vite client error overlay text" o rutas con OneDrive
+**Causa:** El proyecto fue movido de ubicación pero la caché de Angular/Vite aún tiene referencias a rutas antiguas.
+
+**Solución (Windows PowerShell):**
+```powershell
+cd FRONTEND
+npm cache clean --force
+Remove-Item -Recurse -Force .angular -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force node_modules\.vite -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
+npm start
+```
+
+**Solución (Linux/Mac):**
 ```bash
 cd FRONTEND
 npm cache clean --force
-rm -rf .angular node_modules/.vite
+rm -rf .angular node_modules/.vite dist
 npm start
 ```
+
+**Nota:** Si moviste el proyecto desde OneDrive a otra ubicación, asegúrate de limpiar toda la caché antes de ejecutar nuevamente.
 
 Ver `SOLUCIONES_APLICADAS.md` para más detalles.
 
