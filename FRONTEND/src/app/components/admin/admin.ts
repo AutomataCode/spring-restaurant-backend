@@ -247,6 +247,26 @@ export class Admin implements OnInit {
       this.imagePreview = null;
     }
   }
+
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.uploadingImage = true;
+      this.adminService.uploadImage(file, 'platos').subscribe({
+        next: (response) => {
+          this.platoForm.imagenUrl = response.url; // Asignar la URL devuelta por el backend
+          this.updateImagePreview();
+          this.uploadingImage = false;
+          this.showSuccess('Imagen subida exitosamente');
+        },
+        error: (err) => {
+          console.error('Error al subir imagen:', err);
+          this.uploadingImage = false;
+          this.showError('Error al subir imagen: ' + (err.error?.error || err.message));
+        }
+      });
+    }
+  }
   
   savePlato(): void {
     if (!this.platoForm.nombre || !this.platoForm.precio || !this.platoForm.categoriaId) {

@@ -29,8 +29,10 @@ export class PedidoComponent implements OnInit {
 
   pedidoCreado: Pedido | null = null;
   isLoading: boolean = false;
+  isCreatingPedido: boolean = false;
   errorMessage: string = '';
   showSuccess: boolean = false;
+  pedidoConfirmado: boolean = false; // Indica si el pedido ya fue confirmado/guardado
   yapeConfig: YapeConfig | null = null;
 
   constructor(
@@ -109,12 +111,16 @@ export class PedidoComponent implements OnInit {
     }));
   }
 
-  generateWhatsAppMessage(): string {
+  generateWhatsAppMessage(pedidoId?: number): string {
     const user = this.authService.getCurrentUser();
     const tipoPedido = this.pedidoForm.tipoPedido === 'DOMICILIO' ? '🚚 Domicilio' : '🏪 Local';
     const metodoPago = this.pedidoForm.metodoPago === 'EFECTIVO' ? '💵 Efectivo' : '💚 Yape';
     
-    let message = `🍽️ *NUEVO PEDIDO*\n\n`;
+    let message = `🍽️ *NUEVO PEDIDO`;
+    if (pedidoId) {
+      message += ` #${pedidoId}`;
+    }
+    message += `*\n\n`;
     
     // Información del cliente
     message += `*Cliente:*\n`;
@@ -152,13 +158,13 @@ export class PedidoComponent implements OnInit {
     return message;
   }
 
-  openWhatsApp(): void {
+  openWhatsApp(pedidoId?: number): void {
     if (!this.yapeConfig || !this.yapeConfig.whatsapp) {
       this.errorMessage = 'No se pudo obtener el número de WhatsApp de la tienda';
       return;
     }
 
-    const message = this.generateWhatsAppMessage();
+    const message = this.generateWhatsAppMessage(pedidoId);
     let whatsappNumber = this.yapeConfig.whatsapp.replace(/\D/g, ''); // Solo números
     
     // Si el número no empieza con código de país, agregar código de Perú (+51)
@@ -168,61 +174,146 @@ export class PedidoComponent implements OnInit {
     
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     
-    window.open(whatsappUrl, '_blank');
+    // Abrir WhatsApp en una nueva pestaña sin bloquear el flujo
+    // Usar window.open con características específicas para evitar bloqueos
+    const whatsappWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     
-    // Limpiar carrito y mostrar éxito
-    const user = this.authService.getCurrentUser();
-    this.cartService.clearCart();
-    this.showSuccess = true;
-    this.pedidoCreado = {
-      id: Date.now(), // ID temporal para mostrar en la UI
-      usuarioId: user?.id || 0,
-      tipoPedido: this.pedidoForm.tipoPedido,
-      metodoPago: this.pedidoForm.metodoPago,
-      estado: 'PENDIENTE',
-      fechaPedido: new Date().toISOString(),
-      total: this.totalPrice,
-      direccionEntrega: this.pedidoForm.direccionEntrega || undefined,
-      instruccionesEntrega: this.pedidoForm.instruccionesEntrega || undefined,
-      telefonoContacto: this.pedidoForm.telefonoContacto,
-      cambioPara: this.pedidoForm.cambioPara,
-      detalles: this.cartItems.map(item => ({
-        id: 0,
-        platoNombre: item.plato.nombre,
-        cantidad: item.cantidad,
-        precioUnitario: item.plato.precio,
-        subtotal: item.subtotal
-      }))
-    } as Pedido;
-    
-    // Scroll al resultado
-    setTimeout(() => {
-      const resultElement = document.getElementById('pedido-resultado');
-      if (resultElement) {
-        resultElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
+    // Si el navegador bloquea la ventana emergente, mostrar un mensaje
+    if (!whatsappWindow) {
+      // Fallback: copiar el mensaje al portapapeles o mostrar instrucciones
+      console.warn('La ventana de WhatsApp fue bloqueada. URL:', whatsappUrl);
+      // Intentar abrir de otra manera
+      window.location.href = whatsappUrl;
+    }
   }
 
-  onSubmit(): void {
-    // Validaciones
+  // Validar el formulario
+  validateForm(): boolean {
     if (this.pedidoForm.tipoPedido === 'DOMICILIO' && !this.pedidoForm.direccionEntrega) {
       this.errorMessage = 'La dirección de entrega es requerida para domicilio';
-      return;
+      return false;
     }
 
     if (!this.pedidoForm.telefonoContacto) {
       this.errorMessage = 'El teléfono de contacto es requerido';
-      return;
+      return false;
     }
 
     if (!this.pedidoForm.metodoPago) {
       this.errorMessage = 'Debe seleccionar un método de pago';
-      return;
+      return false;
     }
 
     if (this.pedidoForm.metodoPago === 'EFECTIVO' && !this.pedidoForm.cambioPara) {
       this.errorMessage = 'Debe indicar el monto con el que pagará';
+      return false;
+    }
+
+    // Verificar que el usuario esté autenticado
+    const user = this.authService.getCurrentUser();
+    if (!user || !user.id) {
+      this.errorMessage = 'Debe iniciar sesión para realizar un pedido';
+      this.router.navigate(['/login']);
+      return false;
+    }
+
+    // Validar que hay detalles
+    this.prepareDetalles();
+    if (!this.pedidoForm.detalles || this.pedidoForm.detalles.length === 0) {
+      this.errorMessage = 'El carrito está vacío';
+      return false;
+    }
+
+    return true;
+  }
+
+  // PASO 1: Confirmar y guardar el pedido en el backend
+  confirmarPedido(): void {
+    console.log('🔵 confirmarPedido() llamado - Guardando pedido en el backend');
+    
+    // Validar formulario
+    if (!this.validateForm()) {
+      return;
+    }
+
+    this.isCreatingPedido = true;
+    this.errorMessage = '';
+
+    // Asegurar que el usuarioId esté establecido
+    const user = this.authService.getCurrentUser();
+    this.pedidoForm.usuarioId = user!.id;
+
+    // Log para debug
+    console.log('📤 Enviando pedido al backend con datos:', {
+      usuarioId: this.pedidoForm.usuarioId,
+      tipoPedido: this.pedidoForm.tipoPedido,
+      metodoPago: this.pedidoForm.metodoPago,
+      direccionEntrega: this.pedidoForm.direccionEntrega,
+      telefonoContacto: this.pedidoForm.telefonoContacto,
+      detallesCount: this.pedidoForm.detalles.length,
+      detalles: this.pedidoForm.detalles.map(d => ({
+        platoId: d.platoId,
+        cantidad: d.cantidad,
+        precioUnitario: d.precioUnitario
+      }))
+    });
+
+    // Crear el pedido en el backend
+    this.pedidoService.createPedido(this.pedidoForm).subscribe({
+      next: (pedido) => {
+        console.log('✅ Pedido creado exitosamente en el backend:', pedido);
+        console.log('✅ ID del pedido guardado:', pedido.id);
+        console.log('✅ Estado del pedido:', pedido.estado);
+        console.log('✅ UsuarioId del pedido:', pedido.usuarioId);
+        
+        // Validar que el pedido tiene un ID válido (no un timestamp)
+        if (!pedido.id || pedido.id > 1000000000000) {
+          console.error('❌ ERROR: El pedido tiene un ID inválido:', pedido.id);
+          this.errorMessage = 'Error: El pedido no se guardó correctamente. Por favor, intente nuevamente.';
+          this.isCreatingPedido = false;
+          return;
+        }
+        
+        // Pedido guardado exitosamente
+        this.pedidoCreado = pedido;
+        this.pedidoConfirmado = true;
+        this.isCreatingPedido = false;
+        this.cartService.clearCart();
+        
+        // Scroll al resultado
+        setTimeout(() => {
+          const resultElement = document.getElementById('pedido-resultado');
+          if (resultElement) {
+            resultElement.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      },
+      error: (error) => {
+        this.isCreatingPedido = false;
+        console.error('❌ Error al crear pedido:', error);
+        console.error('Error response:', error.error);
+        console.error('Error status:', error.status);
+        
+        if (error.status === 401) {
+          this.errorMessage = 'Debe iniciar sesión para realizar un pedido';
+          this.router.navigate(['/login']);
+        } else if (error.error && error.error.message) {
+          this.errorMessage = error.error.message;
+        } else if (error.error && typeof error.error === 'string') {
+          this.errorMessage = error.error;
+        } else {
+          this.errorMessage = 'Error al crear el pedido. Por favor, intente nuevamente.';
+        }
+      }
+    });
+  }
+
+  // PASO 2: Enviar pedido por WhatsApp (solo si ya fue confirmado)
+  enviarPorWhatsApp(): void {
+    console.log('📱 enviarPorWhatsApp() llamado');
+    
+    if (!this.pedidoConfirmado || !this.pedidoCreado) {
+      this.errorMessage = 'Debe confirmar el pedido primero antes de enviarlo por WhatsApp';
       return;
     }
 
@@ -231,12 +322,14 @@ export class PedidoComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = '';
-
     // Abrir WhatsApp con el mensaje del pedido
-    this.openWhatsApp();
-    this.isLoading = false;
+    this.openWhatsApp(this.pedidoCreado.id);
+    this.showSuccess = true;
+  }
+
+  onSubmit(): void {
+    // Este método ya no se usa, pero lo mantenemos por si acaso
+    this.confirmarPedido();
   }
 
   goToMenu(): void {

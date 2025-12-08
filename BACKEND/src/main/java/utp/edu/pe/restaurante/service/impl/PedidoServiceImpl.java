@@ -143,7 +143,19 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoCompleto.setTotal(totalCalculado);
         pedidoCompleto = pedidoRepository.save(pedidoCompleto);
 
+        // Forzar flush final para asegurar que todo se guardó
+        pedidoRepository.flush();
+        detallePedidoRepository.flush();
+
         PedidoDTO pedidoDTO = pedidoMapper.toDTO(pedidoCompleto);
+
+        // Log importante para verificar que el pedido se guardó
+        System.out.println("✅ PEDIDO GUARDADO EXITOSAMENTE:");
+        System.out.println("   ID: " + pedidoDTO.getId());
+        System.out.println("   UsuarioId: " + pedidoDTO.getUsuarioId());
+        System.out.println("   Estado: " + pedidoDTO.getEstado());
+        System.out.println("   Total: " + pedidoDTO.getTotal());
+        System.out.println("   Detalles: " + (pedidoDTO.getDetalles() != null ? pedidoDTO.getDetalles().size() : 0));
 
         // Notificar al admin sobre el nuevo pedido
         try {

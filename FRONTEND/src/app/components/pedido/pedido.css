@@ -449,6 +449,55 @@
   border-top: 1px solid #e0e0e0;
 }
 
+/* Botón de Confirmar */
+.confirm-btn {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-white);
+  border: none;
+  padding: 18px 36px;
+  border-radius: var(--radius-md);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 8px 24px rgba(var(--color-primary-rgb), 0.4);
+  font-family: var(--font-secondary);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 400px;
+}
+
+.confirm-btn .btn-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  position: relative;
+  z-index: 2;
+}
+
+.confirm-icon {
+  font-size: 24px;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(var(--color-primary-rgb), 0.5);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .submit-btn {
   width: 100%;
   background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
@@ -532,7 +581,20 @@
   100% { transform: rotate(360deg); }
 }
 
+.submit-info,
 .whatsapp-info {
+  margin-top: var(--spacing-md);
+  font-size: 14px;
+  color: var(--color-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.whatsapp-info.success {
+  color: #25d366;
+  font-weight: 600;
   text-align: center;
   margin-top: var(--spacing-md);
   font-size: 13px;

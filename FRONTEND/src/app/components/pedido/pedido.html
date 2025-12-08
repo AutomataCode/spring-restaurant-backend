@@ -17,7 +17,7 @@
     <div class="pedido-content">
     <!-- Formulario de Pedido -->
     @if (!showSuccess) {
-      <form (ngSubmit)="onSubmit()" class="pedido-form">
+      <form class="pedido-form" (ngSubmit)="$event.preventDefault()">
           <!-- Tipo de Pedido -->
           <div class="form-section">
             <div class="section-header">
@@ -202,34 +202,55 @@
             </div>
           }
 
-          <!-- Submit Button -->
+          <!-- Botones de Acción -->
           <div class="submit-section">
-            <button 
-              type="submit" 
-              class="submit-btn whatsapp-btn"
-              [disabled]="isLoading">
-              <div class="btn-content">
-                @if (isLoading) {
-                  <span class="spinner-small"></span>
-                  <span>Procesando...</span>
-                } @else {
+            @if (!pedidoConfirmado) {
+              <!-- Botón 1: Confirmar Pedido -->
+              <button 
+                type="button" 
+                class="submit-btn confirm-btn"
+                (click)="confirmarPedido()"
+                [disabled]="isCreatingPedido">
+                <div class="btn-content">
+                  @if (isCreatingPedido) {
+                    <span class="spinner-small"></span>
+                    <span>Guardando Pedido...</span>
+                  } @else {
+                    <span class="confirm-icon">✅</span>
+                    <span>Confirmar Pedido</span>
+                    <span class="btn-arrow">→</span>
+                  }
+                </div>
+                <div class="btn-shine"></div>
+              </button>
+              <p class="submit-info">
+                <span class="info-icon">ℹ️</span>
+                Primero confirma tu pedido para guardarlo en el sistema
+              </p>
+            } @else {
+              <!-- Botón 2: Enviar por WhatsApp (solo aparece después de confirmar) -->
+              <button 
+                type="button" 
+                class="submit-btn whatsapp-btn"
+                (click)="enviarPorWhatsApp()">
+                <div class="btn-content">
                   <span class="whatsapp-icon-btn">💬</span>
                   <span>Enviar Pedido por WhatsApp</span>
                   <span class="btn-arrow">→</span>
-                }
-              </div>
-              <div class="btn-shine"></div>
-            </button>
-            <p class="whatsapp-info">
-              <span class="info-icon">ℹ️</span>
-              Al confirmar, se abrirá WhatsApp con tu pedido listo para enviar
-            </p>
+                </div>
+                <div class="btn-shine"></div>
+              </button>
+              <p class="whatsapp-info success">
+                <span class="info-icon">✅</span>
+                Pedido confirmado. Ahora puedes enviarlo por WhatsApp
+              </p>
+            }
           </div>
         </form>
     }
 
-    <!-- Pedido Creado Exitosamente -->
-    @if (showSuccess && pedidoCreado) {
+    <!-- Pedido Confirmado -->
+    @if (pedidoConfirmado && pedidoCreado) {
       <div class="success-section" id="pedido-resultado">
         <div class="success-animation">
           <div class="success-icon-wrapper">
@@ -238,15 +259,19 @@
             <div class="success-rings"></div>
           </div>
         </div>
-        <h2 class="success-title">¡Pedido Listo para Enviar!</h2>
-        <p class="success-message">Se ha abierto WhatsApp con tu pedido. Envía el mensaje a la tienda para confirmar tu orden.</p>
-        <div class="whatsapp-status">
-          <div class="status-icon">💬</div>
-          <div class="status-text">
-            <strong>WhatsApp abierto</strong>
-            <span>Revisa tu aplicación de WhatsApp</span>
+        <h2 class="success-title">¡Pedido Confirmado!</h2>
+        @if (showSuccess) {
+          <p class="success-message">Se ha abierto WhatsApp con tu pedido. Envía el mensaje a la tienda para confirmar tu orden.</p>
+          <div class="whatsapp-status">
+            <div class="status-icon">💬</div>
+            <div class="status-text">
+              <strong>WhatsApp abierto</strong>
+              <span>Revisa tu aplicación de WhatsApp</span>
+            </div>
           </div>
-        </div>
+        } @else {
+          <p class="success-message">Tu pedido ha sido guardado exitosamente. Ahora puedes enviarlo por WhatsApp.</p>
+        }
 
         <div class="pedido-details">
           <div class="detail-card">

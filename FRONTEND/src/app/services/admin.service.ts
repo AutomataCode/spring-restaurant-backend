@@ -136,5 +136,11 @@ export class AdminService {
   uploadPlatoImage(formData: FormData): Observable<any> {
     return this.http.post<any>('http://localhost:8080/api/files/upload/plato', formData);
   }
+
+  uploadImage(file: File, subfolder: string): Observable<{ url: string; message: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ url: string; message: string }>(`http://localhost:8080/api/files/upload/${subfolder}`, formData);
+  }
 }
 
