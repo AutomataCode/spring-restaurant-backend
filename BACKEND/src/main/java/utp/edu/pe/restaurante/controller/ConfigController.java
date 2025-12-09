@@ -1,8 +1,10 @@
 package utp.edu.pe.restaurante.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utp.edu.pe.restaurante.repository.UsuarioRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,31 @@ public class ConfigController {
 
     @Value("${app.yape.qr.url:}")
     private String yapeQrUrl;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    /**
+     * Endpoint de health check para Railway
+     * 
+     * @return Estado de la aplicación
+     */
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> health() {
+        Map<String, String> status = new HashMap<>();
+        try {
+            // Verificar conexión a la base de datos
+            usuarioRepository.count();
+            status.put("status", "UP");
+            status.put("database", "CONNECTED");
+            return ResponseEntity.ok(status);
+        } catch (Exception e) {
+            status.put("status", "DOWN");
+            status.put("database", "DISCONNECTED");
+            status.put("error", e.getMessage());
+            return ResponseEntity.status(503).body(status);
+        }
+    }
 
     /**
      * Endpoint para obtener la configuración de Yape
