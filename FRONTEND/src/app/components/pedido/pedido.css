@@ -1045,12 +1045,20 @@
   .pedido-content-wrapper {
     grid-template-columns: 1fr;
     gap: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
   }
 
+  /* En móvil, mostrar el resumen primero */
   .order-summary {
     position: relative;
     top: 0;
     max-height: none;
+    order: -1; /* Mover al inicio */
+  }
+
+  .pedido-content {
+    order: 1; /* Formulario después del resumen */
   }
 }
 
