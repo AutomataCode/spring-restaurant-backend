@@ -1,25 +1,148 @@
-# 🍽️ API REST - Sistema de Restaurante
+# 🍽️ Sistema de Restaurante - Gustitos
 
-Backend desarrollado con Spring Boot para la gestión de un sistema de restaurante.
+<div align="center">
 
-## 📋 Características
+![Pantalla Principal](imagenes%20para%20README/PANTALLA%20PRINCIPAL.png)
 
-- ✅ Gestión de Categorías (COMIDA/BEBIDA)
-- ✅ Gestión de Platos
-- ✅ API REST separada en endpoints públicos y de administración
-- ✅ Validación de datos
-- ✅ Manejo global de excepciones
-- ✅ Mapeo automático con MapStruct
-- ✅ Base de datos MySQL
+**Sistema completo de gestión de restaurante con backend Spring Boot y frontend moderno**
 
-## 🛠️ Tecnologías
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)](https://www.mysql.com/)
+[![License](https://img.shields.io/badge/License-Academic-blue.svg)](LICENSE)
 
-- **Java 21**
-- **Spring Boot 4.0.0-SNAPSHOT**
-- **Spring Data JPA**
-- **MySQL 8**
-- **MapStruct 1.5.5**
-- **Maven**
+</div>
+
+---
+
+## 📖 Sobre el Proyecto
+
+Sistema web completo para la gestión de un restaurante que permite a los clientes explorar el menú, realizar pedidos y gestionar su experiencia gastronómica, mientras que los administradores pueden gestionar platos, categorías y pedidos de manera eficiente.
+
+### ✨ Características Principales
+
+- 🍕 **Catálogo de Platos**: Exploración intuitiva de menú con categorías (Comida/Bebida)
+- 🛒 **Carrito de Compras**: Sistema de compra integrado con gestión de pedidos
+- 👤 **Autenticación de Usuarios**: Sistema de registro e inicio de sesión seguro
+- 📊 **Panel de Administración**: Gestión completa de platos, categorías y pedidos
+- 💳 **Métodos de Pago**: Integración con diferentes formas de pago
+- 📱 **Diseño Responsive**: Interfaz adaptada para todos los dispositivos
+
+---
+
+## 🎨 Vista Previa de la Aplicación
+
+### 🏠 Pantalla Principal y Menú
+
+<div align="center">
+
+#### Menú Principal
+![Menú 1](imagenes%20para%20README/SECCION%20MENU%20-%201.png)
+
+#### Exploración de Platos
+![Menú 2](imagenes%20para%20README/SECCION%20MENU%20-%202.png)
+
+#### Platos Destacados
+![Platos Destacados](imagenes%20para%20README/SECCION%20PLATOS%20DESTACADOS.png)
+
+#### Catálogo de Platos
+![Platos](imagenes%20para%20README/SECCION%20PLATOS%20.png)
+
+#### Categorías
+![Categorías](imagenes%20para%20README/SECCION%20CATEGORIAS.png)
+
+</div>
+
+---
+
+### 🛒 Experiencia de Compra
+
+<div align="center">
+
+#### Carrito de Compras
+![Carrito](imagenes%20para%20README/CARRITO%20DE%20COMPRAS.png)
+
+#### Métodos de Pago e Información del Cliente
+![Pago](imagenes%20para%20README/SECCION%20METODOS%20DE%20PAGO,%20INFORMACION%20DEL%20CLIENTE.png)
+
+</div>
+
+---
+
+### 👤 Autenticación
+
+<div align="center">
+
+#### Iniciar Sesión
+![Login](imagenes%20para%20README/SECCION%20INICIAR%20SESION.png)
+
+#### Crear Usuario
+![Registro](imagenes%20para%20README/SECCION%20CREAR%20USUARIO.png)
+
+</div>
+
+---
+
+### ⚙️ Panel de Administración
+
+<div align="center">
+
+#### Dashboard de Administración
+![Admin Dashboard](imagenes%20para%20README/SECCION%20ADMIN%20DASHBOARD.png)
+
+#### Gestión de Pedidos (Parte 1)
+![Gestión Pedidos 1](imagenes%20para%20README/SECCION%20GESITION%20PEDIDOS%201.png)
+
+#### Gestión de Pedidos (Parte 2)
+![Gestión Pedidos 2](imagenes%20para%20README/SECCION%20GESTION%20DE%20PEDIDOS%202.png)
+
+#### Crear Plato
+![Crear Plato](imagenes%20para%20README/SECCION%20CREAR%20PLATO.png)
+
+#### Actualizar Plato
+![Actualizar Plato](imagenes%20para%20README/SECCION%20ACTUALIZAR%20PLATO.png)
+
+</div>
+
+---
+
+### 📄 Footer
+
+<div align="center">
+
+![Footer](imagenes%20para%20README/SECCION%20FOOTER%20.png)
+
+</div>
+
+---
+
+## 📋 Características Técnicas
+
+### Backend
+- ✅ **API REST** separada en endpoints públicos y de administración
+- ✅ **Gestión de Categorías** (COMIDA/BEBIDA) con activación/desactivación
+- ✅ **Gestión de Platos** completa (CRUD) con validaciones
+- ✅ **Validación de datos** robusta en todas las operaciones
+- ✅ **Manejo global de excepciones** con respuestas estructuradas
+- ✅ **Mapeo automático** con MapStruct para DTOs
+- ✅ **Base de datos MySQL** con relaciones bien definidas
+- ✅ **Soft Delete** para preservar integridad de datos históricos
+
+## 🛠️ Stack Tecnológico
+
+### Backend
+- **Java 21** - Lenguaje de programación
+- **Spring Boot 4.0.0-SNAPSHOT** - Framework principal
+- **Spring Data JPA** - Persistencia de datos
+- **MySQL 8** - Base de datos relacional
+- **MapStruct 1.5.5** - Mapeo de objetos
+- **Maven** - Gestión de dependencias
+
+### Frontend
+- **Angular** - Framework frontend
+- **TypeScript** - Lenguaje de programación
+- **Bootstrap/Angular Material** - Componentes UI
+- **RxJS** - Programación reactiva
 
 ## 🚀 Instalación y Configuración
 
