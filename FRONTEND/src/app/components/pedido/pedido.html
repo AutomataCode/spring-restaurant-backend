@@ -163,11 +163,9 @@
                   <div class="yape-code-section">
                     <p class="yape-label">Código Yape:</p>
                     <p class="yape-number">{{ yapeConfig.codigo }}</p>
-                    @if (yapeConfig.qrUrl) {
-                      <div class="qr-image-container">
-                        <img [src]="yapeConfig.qrUrl" alt="Código QR Yape" class="qr-image" (error)="onQrImageError($event)">
-                      </div>
-                    }
+                    <div class="qr-image-container">
+                      <img [src]="yapeQrImage" alt="Código QR Yape" class="qr-image" (error)="onQrImageError($event)">
+                    </div>
                   </div>
                   <div class="yape-number-section">
                     <p class="yape-label">Número Yape:</p>

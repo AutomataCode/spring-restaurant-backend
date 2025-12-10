@@ -34,6 +34,7 @@ export class PedidoComponent implements OnInit {
   showSuccess: boolean = false;
   pedidoConfirmado: boolean = false; // Indica si el pedido ya fue confirmado/guardado
   yapeConfig: YapeConfig | null = null;
+  yapeQrImage: string = '/assets/QR YAPE/QR YAPE.jpeg'; // Ruta de la imagen local del QR
 
   constructor(
     private cartService: CartService,
