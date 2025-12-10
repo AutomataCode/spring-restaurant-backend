@@ -6,6 +6,8 @@
 
 **Sistema completo de gestión de restaurante con backend Spring Boot y frontend moderno**
 
+🌐 **Sitio Web en Vivo:** [https://restaurantegustitosweb.vercel.app/](https://restaurantegustitosweb.vercel.app/)
+
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)](https://www.mysql.com/)
